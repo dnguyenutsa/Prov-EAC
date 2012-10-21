@@ -1,14 +1,4 @@
-package pbac;
-
-//public class ProvPDP {
-	
-	// specify a sample policy in xml
-	// make mock function to see if it can be invoked with PDP using a sample xml policy
-	// need two functions for evaluating action validation and user authorization
-	
-	
-//}
-
+package sample;
 /*
  * @(#)SimplePDP.java
  *
@@ -45,7 +35,7 @@ package pbac;
  */
 
 
-import com.sun.xacml.ConfigurationStore; 
+import com.sun.xacml.ConfigurationStore;
 import com.sun.xacml.Indenter;
 import com.sun.xacml.ParsingException;
 import com.sun.xacml.PDP;
@@ -76,8 +66,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import sample.TimeInRangeFunction;
-
 
 /**
  * This is a simple, command-line driven XACML PDP. It acts both as an example
@@ -88,7 +76,7 @@ import sample.TimeInRangeFunction;
  * @since 1.1
  * @author seth proctor
  */
-public class ProvPDP
+public class SimplePDP
 {
 
     // this is the actual PDP object we'll use for evaluation
@@ -99,7 +87,7 @@ public class ProvPDP
      * <code>PDP</code> based on the configuration defined by the runtime
      * property com.sun.xcaml.PDPConfigFile.
      */
-    public ProvPDP() throws Exception {
+    public SimplePDP() throws Exception {
         // load the configuration
         ConfigurationStore store = new ConfigurationStore();
 
@@ -114,11 +102,11 @@ public class ProvPDP
      * Constructor that takes an array of filenames, each of which
      * contains an XACML policy, and sets up a <code>PDP</code> with access
      * to these policies only. The <code>PDP</code> is configured
-     * programmatically to have only a few specific modules.
+     * programatically to have only a few specific modules.
      *
-     * @param policyFiles an array of filenames that specify policies
+     * @param policyFiles an arry of filenames that specify policies
      */
-    public ProvPDP(String [] policyFiles) throws Exception {
+    public SimplePDP(String [] policyFiles) throws Exception {
         // Create a PolicyFinderModule and initialize it...in this case,
         // we're using the sample FilePolicyModule that is pre-configured
         // with a set of policies from the filesystem
@@ -137,7 +125,6 @@ public class ProvPDP
         // support a basic implementation)
         CurrentEnvModule envAttributeModule = new CurrentEnvModule();
         SelectorModule selectorAttributeModule = new SelectorModule();
-        LoadEnvModule aLoadEnvModule = new LoadEnvModule();
 
         // Setup the AttributeFinder just like we setup the PolicyFinder. Note
         // that unlike with the policy finder, the order matters here. See the
@@ -146,7 +133,6 @@ public class ProvPDP
         List attributeModules = new ArrayList();
         attributeModules.add(envAttributeModule);
         attributeModules.add(selectorAttributeModule);
-//        attributeModules.add(aLoadEnvModule);
         attributeFinder.setModules(attributeModules);
 
         // Try to load the time-in-range function, which is used by several
@@ -157,10 +143,6 @@ public class ProvPDP
             StandardFunctionFactory.getNewFactoryProxy();
         FunctionFactory factory = proxy.getConditionFactory();
         factory.addFunction(new TimeInRangeFunction());
-        
-//        factory.addFunction(new BoolTextCompare());
-        factory.addFunction(new ReplaceRequestFunction());
-        
         FunctionFactory.setDefaultFactory(proxy);
 
         // finally, initialize our pdp
@@ -207,12 +189,12 @@ public class ProvPDP
             System.exit(1);
         }
         
-        ProvPDP simplePDP = null;
+        SimplePDP simplePDP = null;
         String requestFile = null;
         
         if (args[0].equals("-config")) {
             requestFile = args[1];
-            simplePDP = new ProvPDP();
+            simplePDP = new SimplePDP();
         } else {
             requestFile = args[0];
             String [] policyFiles = new String[args.length - 1];
@@ -220,7 +202,7 @@ public class ProvPDP
             for (int i = 1; i < args.length; i++)
                 policyFiles[i-1] = args[i];
 
-            simplePDP = new ProvPDP(policyFiles);
+            simplePDP = new SimplePDP(policyFiles);
         }
 
         // evaluate the request
