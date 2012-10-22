@@ -97,13 +97,9 @@ public class DataGenerator {
 
 			System.out.println(rs.next());
 		}
-
-
 	}
 
-
 	// Data generation from RDF file
-
 	static public void printModel(Model m){
 
 		// list the statements in Model m

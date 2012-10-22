@@ -1,79 +1,43 @@
-<Policy PolicyId="GeneratedPolicy" RuleCombiningAlgId="urn:oasis:names:tc:xacml:1.0:rule-combining-algorithm:ordered-permit-overrides">
-  <Description>To be written...</Description>
-  <Target>
-    <Subjects>
-      <AnySubject/>
-    </Subjects>
-    <Resources>
-<!--      
-	<AnyResource/> 
-          <ResourceAttributeDesignator AttributeId="urn:oasis:names:tc:xacml:1.0:resource:resource-id" DataType="http://www.w3.org/2001/XMLSchema#string"/>
-        
-        <ResourceMatch MatchId="urn:oasis:names:tc:xacml:1.0:function:string-equal">
-          <AttributeValue DataType="http://www.w3.org/2001/XMLSchema#string">o1v1/</AttributeValue>
-          <AttributeValue DataType="http://www.w3.org/2001/XMLSchema#string">o1v1/</AttributeValue>
-        </ResourceMatch>
+<Policy PolicyId="GeneratedPolicy"
+	RuleCombiningAlgId="urn:oasis:names:tc:xacml:1.0:rule-combining-algorithm:ordered-permit-overrides">
+	<Description>To be written...</Description>
+	<Target>
+		<Subjects>
+			<AnySubject/>
+		</Subjects>
+		<Resources>
+			<AnyResource/>
+		</Resources>
+		<Actions>
+			<Action>
+				<ActionMatch MatchId="urn:oasis:names:tc:xacml:1.0:function:string-equal">
+					<AttributeValue DataType="http://www.w3.org/2001/XMLSchema#string">replace</AttributeValue>
+					<ActionAttributeDesignator
+						AttributeId="urn:oasis:names:tc:xacml:1.0:action:action-id"
+						DataType="http://www.w3.org/2001/XMLSchema#string" />
+				</ActionMatch>
+			</Action>
+		</Actions>
+	</Target>
 
-        <ResourceMatch MatchId="urn:oasis:names:tc:xacml:1.0:function:regexp-string-match">
-          <AttributeValue DataType="http://www.w3.org/2001/XMLSchema#string">o1v1</AttributeValue>
-          <ResourceAttributeDesignator DataType="http://www.w3.org/2001/XMLSchema#string"
-                                       AttributeId="urn:oasis:names:tc:xacml:1.0:resource:resource-id"/>
-        </ResourceMatch>
+	<Rule RuleId="ReplaceRule" Effect="Permit">
+		<Condition FunctionId="urn:oasis:names:tc:xacml:1.0:function:string-is-in">
+			<Apply FunctionId="urn:oasis:names:tc:xacml:1.0:function:string-one-and-only">
+				<SubjectAttributeDesignator
+					AttributeId="urn:oasis:names:tc:xacml:1.0:subject:subject-id"
+					DataType="http://www.w3.org/2001/XMLSchema#string" />
+			</Apply>
+			<Apply FunctionId="replace-request-function">
+				<Apply FunctionId="urn:oasis:names:tc:xacml:1.0:function:string-one-and-only">
+					<ResourceAttributeDesignator
+						AttributeId="urn:oasis:names:tc:xacml:1.0:resource:resource-id"
+						DataType="http://www.w3.org/2001/XMLSchema#string" />
+				</Apply>
+				<AttributeValue DataType="http://www.w3.org/2001/XMLSchema#string">wasAuthoredBy
+				</AttributeValue>
+			</Apply>
+		</Condition>
+	</Rule>
 
-	   <ResourceMatch MatchId="urn:oasis:names:tc:xacml:1.0:function:string-equal">
-          <AttributeValue DataType="http://www.w3.org/2001/XMLSchema#string">document</AttributeValue>
-          <ResourceAttributeDesignator AttributeId="urn:oasis:names:tc:xacml:1.0:resource:resource-id" 
-    		DataType="http://www.w3.org/2001/XMLSchema#string"/>
-    	</ResourceMatch>
--->
-  		<Resource>
-  		<ResourceMatch MatchId="urn:oasis:names:tc:xacml:1.0:function:string-equal">
-        	<AttributeValue DataType="http://www.w3.org/2001/XMLSchema#string">o1v1</AttributeValue>
-        	<ResourceAttributeDesignator AttributeId="urn:oasis:names:tc:xacml:1.0:resource:resource-id" 
-    				DataType="http://www.w3.org/2001/XMLSchema#string"/>
-    	</ResourceMatch>
-  		</Resource>
-    </Resources>
-    <Actions>
-      <Action>
-        <ActionMatch MatchId="urn:oasis:names:tc:xacml:1.0:function:string-equal">
-          <AttributeValue DataType="http://www.w3.org/2001/XMLSchema#string">replace</AttributeValue>
-          <ActionAttributeDesignator AttributeId="urn:oasis:names:tc:xacml:1.0:action:action-id" DataType="http://www.w3.org/2001/XMLSchema#string"/>
-        </ActionMatch>
-      </Action>
-    </Actions>
-  </Target>
-  
-  <Rule RuleId="ReplaceRule" Effect="Permit">
-  	<Target>
-  		<Resources>
-  			<Resource>
-  			<ResourceMatch MatchId="urn:oasis:names:tc:xacml:1.0:function:string-equal">
-          		<AttributeValue DataType="http://www.w3.org/2001/XMLSchema#string">o1v1</AttributeValue>
-          		<ResourceAttributeDesignator AttributeId="urn:oasis:names:tc:xacml:1.0:resource:resource-id" 
-    				DataType="http://www.w3.org/2001/XMLSchema#string"/>
-    		</ResourceMatch>
-  			</Resource>
-  		</Resources>
-  	</Target>
-    <Condition FunctionId="urn:oasis:names:tc:xacml:1.0:function:string-is-in">
-    <AttributeValue DataType="http://www.w3.org/2001/XMLSchema#string">au1</AttributeValue>
-      <Apply FunctionId="replace-request-function">
-        <AttributeValue DataType="http://www.w3.org/2001/XMLSchema#string">o1v1</AttributeValue>
-        <AttributeValue DataType="http://www.w3.org/2001/XMLSchema#string">wasAuthoredBy</AttributeValue>
-      </Apply>
-    </Condition>
-  </Rule>
-<!--
-  <Rule RuleId="ReplaceRuleMatch" Effect="Permit"> 
-    <Condition FunctionId="replace-request-function">
-    <AttributeValue DataType="http://www.w3.org/2001/XMLSchema#string">o1v3</AttributeValue>
-
-    <ResourceAttributeDesignator AttributeId="urn:oasis:names:tc:xacml:1.0:resource:resource-id" DataType="http://www.w3.org/2001/XMLSchema#string"/>
-    <AttributeValue DataType="http://www.w3.org/2001/XMLSchema#string">wasAuthoredBy</AttributeValue>
-    </Condition>
-  </Rule>
--->  
-  
-  <Rule RuleId="FinalRule" Effect="Deny"/>
+	<Rule RuleId="FinalRule" Effect="Deny" />
 </Policy>

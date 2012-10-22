@@ -1,12 +1,12 @@
 package pbac;
 
 //public class ProvPDP {
-	
-	// specify a sample policy in xml
-	// make mock function to see if it can be invoked with PDP using a sample xml policy
-	// need two functions for evaluating action validation and user authorization
-	
-	
+
+// specify a sample policy in xml
+// make mock function to see if it can be invoked with PDP using a sample xml policy
+// need two functions for evaluating action validation and user authorization
+
+
 //}
 
 /*
@@ -91,143 +91,143 @@ import sample.TimeInRangeFunction;
 public class ProvPDP
 {
 
-    // this is the actual PDP object we'll use for evaluation
-    private PDP pdp = null;
+	// this is the actual PDP object we'll use for evaluation
+	private PDP pdp = null;
 
-    /**
-     * Default constructor. This creates a <code>SimplePDP</code> with a
-     * <code>PDP</code> based on the configuration defined by the runtime
-     * property com.sun.xcaml.PDPConfigFile.
-     */
-    public ProvPDP() throws Exception {
-        // load the configuration
-        ConfigurationStore store = new ConfigurationStore();
+	/**
+	 * Default constructor. This creates a <code>SimplePDP</code> with a
+	 * <code>PDP</code> based on the configuration defined by the runtime
+	 * property com.sun.xcaml.PDPConfigFile.
+	 */
+	public ProvPDP() throws Exception {
+		// load the configuration
+		ConfigurationStore store = new ConfigurationStore();
 
-        // use the default factories from the configuration
-        store.useDefaultFactories();
+		// use the default factories from the configuration
+		store.useDefaultFactories();
 
-        // get the PDP configuration's and setup the PDP
-        pdp = new PDP(store.getDefaultPDPConfig());
-    }
+		// get the PDP configuration's and setup the PDP
+		pdp = new PDP(store.getDefaultPDPConfig());
+	}
 
-    /**
-     * Constructor that takes an array of filenames, each of which
-     * contains an XACML policy, and sets up a <code>PDP</code> with access
-     * to these policies only. The <code>PDP</code> is configured
-     * programmatically to have only a few specific modules.
-     *
-     * @param policyFiles an array of filenames that specify policies
-     */
-    public ProvPDP(String [] policyFiles) throws Exception {
-        // Create a PolicyFinderModule and initialize it...in this case,
-        // we're using the sample FilePolicyModule that is pre-configured
-        // with a set of policies from the filesystem
-        FilePolicyModule filePolicyModule = new FilePolicyModule();
-        for (int i = 0; i < policyFiles.length; i++)
-            filePolicyModule.addPolicy(policyFiles[i]);
+	/**
+	 * Constructor that takes an array of filenames, each of which
+	 * contains an XACML policy, and sets up a <code>PDP</code> with access
+	 * to these policies only. The <code>PDP</code> is configured
+	 * programmatically to have only a few specific modules.
+	 *
+	 * @param policyFiles an array of filenames that specify policies
+	 */
+	public ProvPDP(String [] policyFiles) throws Exception {
+		// Create a PolicyFinderModule and initialize it...in this case,
+		// we're using the sample FilePolicyModule that is pre-configured
+		// with a set of policies from the filesystem
+		FilePolicyModule filePolicyModule = new FilePolicyModule();
+		for (int i = 0; i < policyFiles.length; i++)
+			filePolicyModule.addPolicy(policyFiles[i]);
 
-        // next, setup the PolicyFinder that this PDP will use
-        PolicyFinder policyFinder = new PolicyFinder();
-        Set policyModules = new HashSet();
-        policyModules.add(filePolicyModule);
-        policyFinder.setModules(policyModules);
+		// next, setup the PolicyFinder that this PDP will use
+		PolicyFinder policyFinder = new PolicyFinder();
+		Set policyModules = new HashSet();
+		policyModules.add(filePolicyModule);
+		policyFinder.setModules(policyModules);
 
-        // now setup attribute finder modules for the current date/time and
-        // AttributeSelectors (selectors are optional, but this project does
-        // support a basic implementation)
-        CurrentEnvModule envAttributeModule = new CurrentEnvModule();
-        SelectorModule selectorAttributeModule = new SelectorModule();
-        LoadEnvModule aLoadEnvModule = new LoadEnvModule();
+		// now setup attribute finder modules for the current date/time and
+		// AttributeSelectors (selectors are optional, but this project does
+		// support a basic implementation)
+		CurrentEnvModule envAttributeModule = new CurrentEnvModule();
+		SelectorModule selectorAttributeModule = new SelectorModule();
+		LoadEnvModule aLoadEnvModule = new LoadEnvModule();
 
-        // Setup the AttributeFinder just like we setup the PolicyFinder. Note
-        // that unlike with the policy finder, the order matters here. See the
-        // the javadocs for more details.
-        AttributeFinder attributeFinder = new AttributeFinder();
-        List attributeModules = new ArrayList();
-        attributeModules.add(envAttributeModule);
-        attributeModules.add(selectorAttributeModule);
-//        attributeModules.add(aLoadEnvModule);
-        attributeFinder.setModules(attributeModules);
+		// Setup the AttributeFinder just like we setup the PolicyFinder. Note
+		// that unlike with the policy finder, the order matters here. See the
+		// the javadocs for more details.
+		AttributeFinder attributeFinder = new AttributeFinder();
+		List attributeModules = new ArrayList();
+		attributeModules.add(envAttributeModule);
+		attributeModules.add(selectorAttributeModule);
+		//        attributeModules.add(aLoadEnvModule);
+		attributeFinder.setModules(attributeModules);
 
-        // Try to load the time-in-range function, which is used by several
-        // of the examples...see the documentation for this function to
-        // understand why it's provided here instead of in the standard
-        // code base.
-        FunctionFactoryProxy proxy =
-            StandardFunctionFactory.getNewFactoryProxy();
-        FunctionFactory factory = proxy.getConditionFactory();
-        factory.addFunction(new TimeInRangeFunction());
-        
-//        factory.addFunction(new BoolTextCompare());
-        factory.addFunction(new ReplaceRequestFunction());
-        
-        FunctionFactory.setDefaultFactory(proxy);
+		// Try to load the time-in-range function, which is used by several
+		// of the examples...see the documentation for this function to
+		// understand why it's provided here instead of in the standard
+		// code base.
+		FunctionFactoryProxy proxy =
+				StandardFunctionFactory.getNewFactoryProxy();
+		FunctionFactory factory = proxy.getConditionFactory();
+		factory.addFunction(new TimeInRangeFunction());
 
-        // finally, initialize our pdp
-        pdp = new PDP(new PDPConfig(attributeFinder, policyFinder, null));
-    }
+		//        factory.addFunction(new BoolTextCompare());
+		factory.addFunction(new ReplaceRequestFunction());
 
-    /**
-     * Evaluates the given request and returns the Response that the PDP
-     * will hand back to the PEP.
-     *
-     * @param requestFile the name of a file that contains a Request
-     *
-     * @return the result of the evaluation
-     *
-     * @throws IOException if there is a problem accessing the file
-     * @throws ParsingException if the Request is invalid
-     */
-    public ResponseCtx evaluate(String requestFile)
-        throws IOException, ParsingException
-    {
-        // setup the request based on the file
-        RequestCtx request =
-            RequestCtx.getInstance(new FileInputStream(requestFile));
+		FunctionFactory.setDefaultFactory(proxy);
 
-        // evaluate the request
-        return pdp.evaluate(request);
-    }
+		// finally, initialize our pdp
+		pdp = new PDP(new PDPConfig(attributeFinder, policyFinder, null));
+	}
 
-    /**
-     * Main-line driver for this sample code. This method lets you invoke
-     * the PDP directly from the command-line.
-     *
-     * @param args the input arguments to the class. They are either the
-     *             flag "-config" followed by a request file, or a request
-     *             file followed by one or more policy files. In the case
-     *             that the configuration flag is used, the configuration
-     *             file must be specified in the standard java property,
-     *             com.sun.xacml.PDPConfigFile.
-     */
-    public static void main(String [] args) throws Exception {
-        if (args.length < 2) {
-            System.out.println("Usage: -config <request>");
-            System.out.println("       <request> <policy> [policies]");
-            System.exit(1);
-        }
-        
-        ProvPDP simplePDP = null;
-        String requestFile = null;
-        
-        if (args[0].equals("-config")) {
-            requestFile = args[1];
-            simplePDP = new ProvPDP();
-        } else {
-            requestFile = args[0];
-            String [] policyFiles = new String[args.length - 1];
-            
-            for (int i = 1; i < args.length; i++)
-                policyFiles[i-1] = args[i];
+	/**
+	 * Evaluates the given request and returns the Response that the PDP
+	 * will hand back to the PEP.
+	 *
+	 * @param requestFile the name of a file that contains a Request
+	 *
+	 * @return the result of the evaluation
+	 *
+	 * @throws IOException if there is a problem accessing the file
+	 * @throws ParsingException if the Request is invalid
+	 */
+	public ResponseCtx evaluate(String requestFile)
+			throws IOException, ParsingException
+			{
+		// setup the request based on the file
+		RequestCtx request =
+				RequestCtx.getInstance(new FileInputStream(requestFile));
 
-            simplePDP = new ProvPDP(policyFiles);
-        }
+		// evaluate the request
+		return pdp.evaluate(request);
+			}
 
-        // evaluate the request
-        ResponseCtx response = simplePDP.evaluate(requestFile);
+	/**
+	 * Main-line driver for this sample code. This method lets you invoke
+	 * the PDP directly from the command-line.
+	 *
+	 * @param args the input arguments to the class. They are either the
+	 *             flag "-config" followed by a request file, or a request
+	 *             file followed by one or more policy files. In the case
+	 *             that the configuration flag is used, the configuration
+	 *             file must be specified in the standard java property,
+	 *             com.sun.xacml.PDPConfigFile.
+	 */
+	public static void main(String [] args) throws Exception {
+		if (args.length < 2) {
+			System.out.println("Usage: -config <request>");
+			System.out.println("       <request> <policy> [policies]");
+			System.exit(1);
+		}
 
-        // for this sample program, we'll just print out the response
-        response.encode(System.out, new Indenter());
-    }
+		ProvPDP simplePDP = null;
+		String requestFile = null;
+
+		if (args[0].equals("-config")) {
+			requestFile = args[1];
+			simplePDP = new ProvPDP();
+		} else {
+			requestFile = args[0];
+			String [] policyFiles = new String[args.length - 1];
+
+			for (int i = 1; i < args.length; i++)
+				policyFiles[i-1] = args[i];
+
+			simplePDP = new ProvPDP(policyFiles);
+		}
+
+		// evaluate the request
+		ResponseCtx response = simplePDP.evaluate(requestFile);
+
+		// for this sample program, we'll just print out the response
+		response.encode(System.out, new Indenter());
+	}
 
 }
