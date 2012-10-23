@@ -3,9 +3,9 @@
 	<classpathentry kind="src" path="main"/>
 	<classpathentry kind="src" path="sunxacml"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-1.6"/>
-	<classpathentry kind="con" path="org.eclipse.jdt.USER_LIBRARY/jenalib"/>
-	<classpathentry kind="con" path="org.eclipse.jdt.USER_LIBRARY/mysql"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.USER_LIBRARY/commonloggings"/>
-	<classpathentry kind="lib" path="/home/dangnguyen/javalibs/xalan.jar"/>
+	<classpathentry kind="lib" path="C:/Users/dnguyen/Downloads/sunxacml-1.2/lib/xalan.jar"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.USER_LIBRARY/jenalib"/>
+	<classpathentry kind="lib" path="C:/Users/dnguyen/eclipsedl/mysql-connector-java-5.0.8/mysql-connector-java-5.0.8-bin.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
