@@ -18,7 +18,8 @@ public class DependencyStore {
 	private static Map<String, String> depList;
 	
 	public static Map<String, String> createNewDepList(){
-		depList = new HashMap<String,String>();
+		if (depList == null)
+			depList = new HashMap<String,String>();
 		return depList;
 	}
 	

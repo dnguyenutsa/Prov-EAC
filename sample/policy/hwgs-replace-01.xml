@@ -27,7 +27,7 @@
 					AttributeId="urn:oasis:names:tc:xacml:1.0:subject:subject-id"
 					DataType="http://www.w3.org/2001/XMLSchema#string" />
 			</Apply>
-			<Apply FunctionId="replace-request-function">
+			<Apply FunctionId="regular-path-query-function">
 				<Apply FunctionId="urn:oasis:names:tc:xacml:1.0:function:string-one-and-only">
 					<ResourceAttributeDesignator
 						AttributeId="urn:oasis:names:tc:xacml:1.0:resource:resource-id"

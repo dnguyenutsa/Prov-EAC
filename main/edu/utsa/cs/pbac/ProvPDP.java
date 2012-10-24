@@ -81,10 +81,7 @@ import startup.LoadEnvModule;
 
 
 /**
- * This is a simple, command-line driven XACML PDP. It acts both as an example
- * of how to write a full-featured PDP and as a sample program that lets you
- * evaluate requests against policies. See the comments for the main() method
- * for correct usage.
+ * This is a simple, command-line driven XACML PDP. 
  *
  * @since 1.1
  * @author seth proctor
@@ -138,7 +135,7 @@ public class ProvPDP
 		// support a basic implementation)
 		CurrentEnvModule envAttributeModule = new CurrentEnvModule();
 		SelectorModule selectorAttributeModule = new SelectorModule();
-		LoadEnvModule aLoadEnvModule = new LoadEnvModule();
+//		LoadEnvModule aLoadEnvModule = new LoadEnvModule();
 
 		// Setup the AttributeFinder just like we setup the PolicyFinder. Note
 		// that unlike with the policy finder, the order matters here. See the
@@ -160,7 +157,7 @@ public class ProvPDP
 		factory.addFunction(new TimeInRangeFunction());
 
 		//        factory.addFunction(new BoolTextCompare());
-		factory.addFunction(new ReplaceRequestFunction());
+		factory.addFunction(new RegularPathQueryFunction());
 
 		FunctionFactory.setDefaultFactory(proxy);
 

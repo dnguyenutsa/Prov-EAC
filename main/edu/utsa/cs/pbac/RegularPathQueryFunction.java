@@ -20,17 +20,17 @@ import com.sun.xacml.attr.StringAttribute;
 import com.sun.xacml.cond.EvaluationResult;
 import com.sun.xacml.cond.FunctionBase;
 
-public class ReplaceRequestFunction extends FunctionBase{
+public class RegularPathQueryFunction extends FunctionBase{
 
 	// the name of the function, which will be used publicly
-    public static final String NAME = "replace-request-function";
+    public static final String NAME = "regular-path-query-function";
 
     // the parameter types, in order, and whether or not they're bags
     private static final String params [] = { StringAttribute.identifier,
                                               StringAttribute.identifier};
     private static final boolean bagParams [] = { false, false };
 
-    public ReplaceRequestFunction() {
+    public RegularPathQueryFunction() {
         // use the constructor that handles mixed argument types
         super(NAME, 0, params, bagParams, StringAttribute.identifier,
               true);
@@ -45,20 +45,18 @@ public class ReplaceRequestFunction extends FunctionBase{
             return result;
 
         // cast the resolved values into specific types
-//        BooleanAttribute bool = (BooleanAttribute)(argValues[0]);
-//        StringAttribute str = (StringAttribute)(argValues[1]);
-        boolean evalResult = false;
-        
         // assuming the order of parameters to function
-        StringAttribute objectId = (StringAttribute) (argValues[0]);
+        // starting node is an objectId, on which, the regular path pattern
+        // associated with depenName is applied on to obtain a result nodes set. 
+         
+        StringAttribute startingNode = (StringAttribute) (argValues[0]);
         StringAttribute depenName = (StringAttribute) (argValues[1]);
-//        StringAttribute agentId = (StringAttribute) (argValues[2]);
         
-        String objectIdStr = objectId.getValue();
+        String startingNodeStr = startingNode.getValue();
         String depenNameStr = depenName.getValue();
         
-        System.out.println(objectIdStr);
-        System.out.println(depenNameStr);
+//        System.out.println(objectIdStr);
+//        System.out.println(depenNameStr);
         
         
         // obtain Jena model from memory
@@ -66,10 +64,16 @@ public class ReplaceRequestFunction extends FunctionBase{
         Model hwgsModel = DataGenerator.getModelInstance(); 
 //        DataGenerator.printModel(hwgsModel);
         
-        String prefix = "PREFIX hw: <http://peac/hwgs#>";
+        String wasAuthoredBy = "((hw:wasGeneratedBySubmit/hw:usedInput)?" +
+        						"/(hw:wasGeneratedByReplace/hw:usedInput)*" +
+        						"/hw:wasGeneratedByUpload/hw:wasControlledBy)";
+        
+        String wasSubmittedVof = "(hw:wasGeneratedBySubmit/hw:usedInput)?";
+        
 		String qStr = "PREFIX hw: <http://peac/hwgs#>";
 		qStr += "\n" + 
-				"SELECT ?agent WHERE { hw:" + objectIdStr + " (hw:wasGeneratedByUpload/hw:wasControlledBy) ?agent. }";
+				"SELECT ?agent WHERE { hw:" + startingNodeStr + " " + wasAuthoredBy
+				+ " ?agent. }";
 		Query q = QueryFactory.create(qStr);
 		QueryExecution qexec= QueryExecutionFactory.create( q, hwgsModel );
 		ResultSet rs= qexec.execSelect();
@@ -93,9 +97,5 @@ public class ReplaceRequestFunction extends FunctionBase{
 			e.printStackTrace();
 		}
 		return null;
-//		EvaluationResult eval = new EvaluationResult(BagAttribute.createEmptyBag(null));
-		
-//      return EvaluationResult.getInstance(evalResult);
     }
-
 }
