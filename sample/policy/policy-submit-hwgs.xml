@@ -1,0 +1,64 @@
+<Policy PolicyId="SubmitPolicy"
+	RuleCombiningAlgId="urn:oasis:names:tc:xacml:1.0:rule-combining-algorithm:ordered-permit-overrides">
+	<Description>To be written...</Description>
+	<Target>
+		<Subjects>
+			<AnySubject />
+		</Subjects>
+		<Resources>
+			<AnyResource />
+		</Resources>
+		<Actions>
+			<Action>
+				<ActionMatch MatchId="urn:oasis:names:tc:xacml:1.0:function:string-equal">
+					<AttributeValue DataType="http://www.w3.org/2001/XMLSchema#string">submit</AttributeValue>
+					<ActionAttributeDesignator
+						AttributeId="urn:oasis:names:tc:xacml:1.0:action:action-id"
+						DataType="http://www.w3.org/2001/XMLSchema#string" />
+				</ActionMatch>
+			</Action>
+		</Actions>
+	</Target>
+
+	<Rule RuleId="SubmitRule" Effect="Permit">
+		<Condition FunctionId="urn:oasis:names:tc:xacml:1.0:function:and">
+			<Apply FunctionId="urn:oasis:names:tc:xacml:1.0:function:string-is-in">
+				<Apply FunctionId="urn:oasis:names:tc:xacml:1.0:function:string-one-and-only">
+					<SubjectAttributeDesignator
+						AttributeId="urn:oasis:names:tc:xacml:1.0:subject:subject-id"
+						DataType="http://www.w3.org/2001/XMLSchema#string" />
+				</Apply>
+				<Apply FunctionId="regular-path-query-function">
+					<Apply FunctionId="urn:oasis:names:tc:xacml:1.0:function:string-one-and-only">
+						<ResourceAttributeDesignator
+							AttributeId="urn:oasis:names:tc:xacml:1.0:resource:resource-id"
+							DataType="http://www.w3.org/2001/XMLSchema#string" />
+					</Apply>
+					<AttributeValue DataType="http://www.w3.org/2001/XMLSchema#string">wasAuthoredBy
+					</AttributeValue>
+					<AttributeValue DataType="http://www.w3.org/2001/XMLSchema#string">UserAuthorization
+					</AttributeValue>
+				</Apply>
+			</Apply>
+
+			<Apply FunctionId="urn:oasis:names:tc:xacml:1.0:function:integer-equal">
+				<AttributeValue DataType="http://www.w3.org/2001/XMLSchema#integer">0</AttributeValue>
+				<Apply FunctionId="urn:oasis:names:tc:xacml:1.0:function:string-bag-size">
+					<Apply FunctionId="regular-path-query-function">
+						<Apply FunctionId="urn:oasis:names:tc:xacml:1.0:function:string-one-and-only">
+							<ResourceAttributeDesignator
+								AttributeId="urn:oasis:names:tc:xacml:1.0:resource:resource-id"
+								DataType="http://www.w3.org/2001/XMLSchema#string" />
+						</Apply>
+						<AttributeValue DataType="http://www.w3.org/2001/XMLSchema#string">wasSubmittedVof
+						</AttributeValue>
+						<AttributeValue DataType="http://www.w3.org/2001/XMLSchema#string">ActionValidation
+						</AttributeValue>
+					</Apply>
+				</Apply>
+			</Apply>
+		</Condition>
+	</Rule>
+
+	<Rule RuleId="FinalRule" Effect="Deny" />
+</Policy>

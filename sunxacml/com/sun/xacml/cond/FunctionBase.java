@@ -396,13 +396,13 @@ public abstract class FunctionBase implements Function
             while (it.hasNext()) {
                 Evaluatable eval = (Evaluatable)(it.next());
 
-                System.out.println(eval.getType().toString());
-                System.out.println(paramTypes[i]);
-                
-                System.out.println(paramsAreBags[i]);
-                System.out.println(eval.evaluatesToBag()); 
-                
-                System.out.println((eval.evaluatesToBag() != paramsAreBags[i]));
+//                System.out.println(eval.getType().toString());
+//                System.out.println(paramTypes[i]);
+//                
+//                System.out.println(paramsAreBags[i]);
+//                System.out.println(eval.evaluatesToBag()); 
+//                
+//                System.out.println((eval.evaluatesToBag() != paramsAreBags[i]));
                 
                 if ((! eval.getType().toString().equals(paramTypes[i])) ||
                     (eval.evaluatesToBag() != paramsAreBags[i]))

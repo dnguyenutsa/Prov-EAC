@@ -80,7 +80,7 @@ public class DataGenerator {
 		//		ResultSetFormatter.out(System.out, rs, q);
 		for ( ; rs.hasNext() ;){
 			String entry = rs.next().getResource("?process").toString();
-			System.out.println(entry);
+//			System.out.println(entry);
 
 		}
 		String auid = "au1";
@@ -94,8 +94,8 @@ public class DataGenerator {
 		//		ResultSetFormatter.out(System.out, rs, query);
 
 		for ( ; rs.hasNext() ;){
-
-			System.out.println(rs.next());
+			rs.next();
+//			System.out.println(rs.next());
 		}
 	}
 

@@ -18,9 +18,27 @@ public class DependencyStore {
 	private static Map<String, String> depList;
 	
 	public static Map<String, String> createNewDepList(){
-		if (depList == null)
+		if (depList == null){
 			depList = new HashMap<String,String>();
+			populateSampleDList();
+		}
 		return depList;
+	}
+	
+	private static void populateSampleDList() {
+		String wasAuthoredBy = "((hw:wasGeneratedBySubmit/hw:usedInput)?" +
+				"/(hw:wasGeneratedByReplace/hw:usedInput)*" +
+				"/hw:wasGeneratedByUpload/hw:wasControlledBy)";
+		String wasReviewedBy = "^(hw:wasGeneratedByReview/hw:usedInput)" +
+				"/(hw:wasGeneratedByReview/hw:wasControlledBy)";
+		
+		depList.put("wasReplacedVof", "(hw:wasGeneratedByReplace/hw:usedInput)");
+		depList.put("wasSubmittedVof", "(hw:wasGeneratedBySubmit/hw:usedInput)");
+		depList.put("wasReviewedOof", "(hw:wasGeneratedByReview/hw:usedInput)");
+		depList.put("wasReviewedOby", "(hw:wasGeneratedByReview/hw:wasControlledBy)");
+		depList.put("wasGradedOof", "(hw:wasGeneratedByGrade/hw:usedInput)");
+		depList.put("wasAuthoredBy", wasAuthoredBy);
+		depList.put("wasReviewedBy", wasReviewedBy);
 	}
 	
 	public static void loadDepListFromDatabase(){
