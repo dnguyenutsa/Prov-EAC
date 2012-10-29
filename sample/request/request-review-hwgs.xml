@@ -1,9 +1,9 @@
 <Request>
   <Subject SubjectCategory="urn:oasis:names:tc:xacml:1.0:subject-category:access-subject">
-    <Attribute AttributeId="urn:oasis:names:tc:xacml:1.0:subject:subject-id" DataType="http://www.w3.org/2001/XMLSchema#string"><AttributeValue>au2</AttributeValue></Attribute>
+    <Attribute AttributeId="urn:oasis:names:tc:xacml:1.0:subject:subject-id" DataType="http://www.w3.org/2001/XMLSchema#string"><AttributeValue>au4</AttributeValue></Attribute>
   </Subject>
   <Resource>
-    <Attribute AttributeId="urn:oasis:names:tc:xacml:1.0:resource:resource-id" DataType="http://www.w3.org/2001/XMLSchema#string"><AttributeValue>o2v1</AttributeValue></Attribute>
+    <Attribute AttributeId="urn:oasis:names:tc:xacml:1.0:resource:resource-id" DataType="http://www.w3.org/2001/XMLSchema#string"><AttributeValue>o1v3</AttributeValue></Attribute>
   </Resource>
   <Action>
     <Attribute AttributeId="urn:oasis:names:tc:xacml:1.0:action:action-id" DataType="http://www.w3.org/2001/XMLSchema#string"><AttributeValue>review</AttributeValue></Attribute>

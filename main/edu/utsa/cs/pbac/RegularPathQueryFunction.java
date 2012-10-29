@@ -74,6 +74,7 @@ public class RegularPathQueryFunction extends FunctionBase{
 			qStr += "\n" + 
 					"SELECT ?agent WHERE { hw:" + startingNodeStr + " " + wasAuthoredBy
 					+ " ?agent. }";
+			System.out.println(qStr);
 			Query q = QueryFactory.create(qStr);
 			QueryExecution qexec= QueryExecutionFactory.create( q, hwgsModel );
 			ResultSet rs= qexec.execSelect();
@@ -109,8 +110,7 @@ public class RegularPathQueryFunction extends FunctionBase{
 			ArrayList<StringAttribute> results = new ArrayList<StringAttribute>();
 			for ( ; rs.hasNext() ;){
 				System.out.println("hey");
-				System.out.println(rs.next());
-//				results.add(new StringAttribute(rs.next().toString()));
+				results.add(new StringAttribute(rs.next().toString()));
 			}
 
 			try {

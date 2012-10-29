@@ -1,4 +1,4 @@
-<Policy PolicyId="SubmitPolicy"
+<Policy PolicyId="GradePolicy"
 	RuleCombiningAlgId="urn:oasis:names:tc:xacml:1.0:rule-combining-algorithm:ordered-permit-overrides">
 	<Description>To be written...</Description>
 	<Target>
@@ -11,7 +11,7 @@
 		<Actions>
 			<Action>
 				<ActionMatch MatchId="urn:oasis:names:tc:xacml:1.0:function:string-equal">
-					<AttributeValue DataType="http://www.w3.org/2001/XMLSchema#string">submit</AttributeValue>
+					<AttributeValue DataType="http://www.w3.org/2001/XMLSchema#string">grade</AttributeValue>
 					<ActionAttributeDesignator
 						AttributeId="urn:oasis:names:tc:xacml:1.0:action:action-id"
 						DataType="http://www.w3.org/2001/XMLSchema#string" />
@@ -20,7 +20,7 @@
 		</Actions>
 	</Target>
 
-	<Rule RuleId="SubmitRule" Effect="Permit">
+	<Rule RuleId="GradeRule" Effect="Permit">
 		<Condition FunctionId="urn:oasis:names:tc:xacml:1.0:function:and">
 			<Apply FunctionId="urn:oasis:names:tc:xacml:1.0:function:integer-greater-than">
 				<Apply FunctionId="urn:oasis:names:tc:xacml:1.0:function:string-bag-size">
@@ -30,7 +30,7 @@
 								AttributeId="urn:oasis:names:tc:xacml:1.0:resource:resource-id"
 								DataType="http://www.w3.org/2001/XMLSchema#string" />
 						</Apply>
-						<AttributeValue DataType="http://www.w3.org/2001/XMLSchema#string">wasReviewedOof
+						<AttributeValue DataType="http://www.w3.org/2001/XMLSchema#string">wasReviewedOofInverse
 						</AttributeValue>
 						<AttributeValue DataType="http://www.w3.org/2001/XMLSchema#string">ActionValidation
 						</AttributeValue>

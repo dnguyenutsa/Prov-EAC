@@ -29,7 +29,7 @@ public class DependencyStore {
 		String wasAuthoredBy = "((hw:wasGeneratedBySubmit/hw:usedInput)?" +
 				"/(hw:wasGeneratedByReplace/hw:usedInput)*" +
 				"/hw:wasGeneratedByUpload/hw:wasControlledBy)";
-		String wasReviewedBy = "^(hw:wasGeneratedByReview/hw:usedInput)" +
+		String wasReviewedBy = "(^hw:usedInput/^hw:wasGeneratedByReview)" +
 				"/(hw:wasGeneratedByReview/hw:wasControlledBy)";
 		
 		depList.put("wasReplacedVof", "(hw:wasGeneratedByReplace/hw:usedInput)");
@@ -39,6 +39,8 @@ public class DependencyStore {
 		depList.put("wasGradedOof", "(hw:wasGeneratedByGrade/hw:usedInput)");
 		depList.put("wasAuthoredBy", wasAuthoredBy);
 		depList.put("wasReviewedBy", wasReviewedBy);
+		depList.put("wasGradedOofInverse", "(^hw:usedInput/^hw:wasGeneratedByGrade)");
+		depList.put("wasReviewedOofInverse", "(^hw:usedInput/^hw:wasGeneratedByReview)");
 	}
 	
 	public static void loadDepListFromDatabase(){
