@@ -1,5 +1,7 @@
 package edu.utsa.cs.pbac;
 
+import java.io.FileInputStream;
+import java.io.InputStream;
 import java.util.Map;
 
 import com.hp.hpl.jena.query.Query;
@@ -147,6 +149,11 @@ public class DataGenerator {
 		// generate new dependency list and populate with sample data
 		Map<String, String> localDList = DependencyStore.createNewDepList();
 		populateSampleDList(localDList);
+		
+		System.out.println(System.getProperty("C:\\Users\\dnguyen\\workspace\\Prov-EAC\\jena.rdf"));
+		
+		
+		Model rdfmodel = generateModelFromRDFFile("C:\\Users\\dnguyen\\workspace\\Prov-EAC\\jena.rdf");
 	}
 
 	public static Model getModelInstance(){
@@ -158,9 +165,17 @@ public class DataGenerator {
 
 	private static Model generateModelFromRDFFile(String filename) {
 		Model modelFromFile = ModelFactory.createDefaultModel();
-		modelFromFile.read(filename);
-		modelFromFile.write(System.out, "RDF/XML");
-
+//		modelFromFile.read(filename);
+//		modelFromFile.write(System.out, "RDF/XML");
+		try{
+			 InputStream in =new  FileInputStream(filename);
+			  if (in == null) {  
+			  System.out.println("File not found");
+			 }  
+			  modelFromFile.read(in," ");
+			  modelFromFile.write(System.out, "N-TRIPLE");
+			  
+			 }catch(Exception e){}
 		return modelFromFile;
 
 	}
