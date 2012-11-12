@@ -20,10 +20,14 @@ import com.hp.hpl.jena.rdf.model.StmtIterator;
 import com.hp.hpl.jena.vocabulary.DC;
 
 public class DataGenerator {
-	static Model model1;
+	static Model model1, model2;
 	public static String hwgs = "http://peac/hwgs#";
-	// Manual Data Generation
-	public static void manualGeneration(){
+	
+	/*
+	 * This method is used to generate the RDF model of
+	 * the provenance example of a HWGS in PST12 presentation slides.
+	 */
+	private static void manualGeneration(){
 		model1 = ModelFactory.createDefaultModel();
 
 		Resource o1v1 = model1.createResource(hwgs + "o1v1");
@@ -63,28 +67,20 @@ public class DataGenerator {
 		grade1.addProperty(uInput, o1v3).addProperty(controlledBy, au3);
 		o3v1.addProperty(gGrade, grade1);
 
-		//		o1v1.addProperty(DC.description, upload1);
-
-		//		model1.write(System.out);
-//		model1.write(System.out, "RDF/XML-ABBREV");
-
-//		printModel(model1);
-
+		// Sample queries over the generated model
 		String prefix = "PREFIX hw: <http://peac/hwgs#>";
 		String qStr = "PREFIX hw: <http://peac/hwgs#>";
 		qStr += "\n" + 
 				"SELECT ?process WHERE { ?process hw:wasControlledBy hw:au1. }";
-		
+
 		Query q = QueryFactory.create(qStr);
 		QueryExecution qexec= QueryExecutionFactory.create( q, model1 );
 		ResultSet rs= qexec.execSelect();
 
-		//		ResultSetFormatter.out(System.out, rs, q);
 		for ( ; rs.hasNext() ;){
 			String entry = rs.next().getResource("?process").toString();
-//			System.out.println(entry);
-
 		}
+		
 		String auid = "au1";
 		String queryString = prefix;
 		queryString += "\n" +
@@ -93,14 +89,76 @@ public class DataGenerator {
 		qexec= QueryExecutionFactory.create( query, model1 );
 		rs= qexec.execSelect();
 
-		//		ResultSetFormatter.out(System.out, rs, query);
-
-		for ( ; rs.hasNext() ;){
-			rs.next();
-//			System.out.println(rs.next());
-		}
 	}
 
+	/*
+	 * This method is used to generate sample RDF model with large number of triples.
+	 *
+	 */
+	private static void generateLargeModel(int numActions){
+		model2 = ModelFactory.createDefaultModel();
+		
+		Resource o1v1 = model2.createResource(hwgs + "o1v0");
+
+		Resource upload1 = model2.createResource(hwgs + "upload1");
+		
+		Resource submit1 = model2.createResource(hwgs + "submit1");
+		Resource review1 = model2.createResource(hwgs + "review1");
+		Resource grade1 = model2.createResource(hwgs + "grade1");
+
+		Resource au1 = model2.createResource(hwgs + "au1");
+		Resource au2 = model2.createResource(hwgs + "au2");
+		Resource au3 = model2.createResource(hwgs + "au3");
+
+		Property gUpload = model2.createProperty(hwgs, "wasGeneratedByUpload");
+		Property gReplace = model2.createProperty(hwgs, "wasGeneratedByReplace");
+		Property controlledBy = model2.createProperty(hwgs, "wasControlledBy");
+		Property gSubmit = model2.createProperty(hwgs, "wasGeneratedBySubmit");
+		Property gReview = model2.createProperty(hwgs, "wasGeneratedByReview");
+		Property gGrade = model2.createProperty(hwgs, "wasGeneratedByGrade");
+		Property uInput = model2.createProperty(hwgs, "usedInput");
+		
+		// au1 uploads a homework
+		// note here we can generate multiple instances of au_x to simulate
+		// disjoint graphs/models
+		o1v1.addProperty(gUpload, (upload1));
+		upload1.addProperty(controlledBy, au1);
+		
+		// au1 replaced it arbitrary number of times
+		// here we generate large number of replace to simulate depth
+		Resource prevObj = o1v1;
+		Resource curObj = null;
+		for (int i = 1; i <= numActions; i++){
+			StringBuffer objRef = new StringBuffer(hwgs).append("o1v").append(i);
+			curObj = model2.createResource(objRef.toString());
+			StringBuffer replaceRef = new StringBuffer(hwgs).append("replace").append(i);
+			Resource replace = model2.createResource(replaceRef.toString());
+			
+			replace.addProperty(uInput, prevObj).addProperty(controlledBy, au1);
+			curObj.addProperty(gReplace, replace);
+			prevObj = curObj;
+		}
+		
+		// au1 submitted the latest replaced homework version
+//		if (curObj == null)
+//			System.err.println("curObj is null");
+		submit1.addProperty(uInput, prevObj);
+		submit1.addProperty(controlledBy, au1);
+		StringBuffer objRef = new StringBuffer(hwgs).append("o1v").append(numActions+1);
+		curObj = model2.createResource(objRef.toString());
+		curObj.addProperty(gSubmit, submit1);
+		
+		// review process here
+		// note we can generate large number of reviewers to simulate breadth
+		int objId = 2;
+		review1.addProperty(uInput, curObj);
+		StringBuffer objIdRef = new StringBuffer(hwgs).append("o").append(objId)
+				.append("v0");
+		
+		// grade process here
+		printModel(model2);
+	}
+	
 	// Data generation from RDF file
 	static public void printModel(Model m){
 
@@ -122,7 +180,6 @@ public class DataGenerator {
 				// object is a literal
 				System.out.print(" \"" + object.toString() + "\"");
 			}
-
 			System.out.println(" .");
 		}
 	}
@@ -142,18 +199,17 @@ public class DataGenerator {
 
 		// generate sample mock data based on grading system scenario
 		// simplified scenario from pbac presentation slides
-		manualGeneration();
-
-		//		generateModelFromRDFFile("/sample/sample.rdf");
-
+//		manualGeneration();
+		
+		// generate sample model to mock large graph
+		generateLargeModel(1000);
+		
 		// generate new dependency list and populate with sample data
 		Map<String, String> localDList = DependencyStore.createNewDepList();
 		populateSampleDList(localDList);
-		
-		System.out.println(System.getProperty("C:\\Users\\dnguyen\\workspace\\Prov-EAC\\jena.rdf"));
-		
-		
-		Model rdfmodel = generateModelFromRDFFile("C:\\Users\\dnguyen\\workspace\\Prov-EAC\\jena.rdf");
+
+//		System.out.println(System.getProperty("C:\\Users\\dnguyen\\workspace\\Prov-EAC\\jena.rdf"));
+//		Model rdfmodel = generateModelFromRDFFile("C:\\Users\\dnguyen\\workspace\\Prov-EAC\\jena.rdf");
 	}
 
 	public static Model getModelInstance(){
@@ -165,17 +221,17 @@ public class DataGenerator {
 
 	private static Model generateModelFromRDFFile(String filename) {
 		Model modelFromFile = ModelFactory.createDefaultModel();
-//		modelFromFile.read(filename);
-//		modelFromFile.write(System.out, "RDF/XML");
+		//		modelFromFile.read(filename);
+		//		modelFromFile.write(System.out, "RDF/XML");
 		try{
-			 InputStream in =new  FileInputStream(filename);
-			  if (in == null) {  
-			  System.out.println("File not found");
-			 }  
-			  modelFromFile.read(in," ");
-			  modelFromFile.write(System.out, "N-TRIPLE");
-			  
-			 }catch(Exception e){}
+			InputStream in =new  FileInputStream(filename);
+			if (in == null) {  
+				System.out.println("File not found");
+			}  
+			modelFromFile.read(in," ");
+			modelFromFile.write(System.out, "N-TRIPLE");
+
+		}catch(Exception e){}
 		return modelFromFile;
 
 	}
