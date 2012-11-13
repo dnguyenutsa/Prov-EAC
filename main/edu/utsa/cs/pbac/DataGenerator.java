@@ -151,11 +151,29 @@ public class DataGenerator {
 		// review process here
 		// note we can generate large number of reviewers to simulate breadth
 		int objId = 2;
-		review1.addProperty(uInput, curObj);
+		review1.addProperty(uInput, curObj).addProperty(controlledBy, au2);
 		StringBuffer objIdRef = new StringBuffer(hwgs).append("o").append(objId)
 				.append("v0");
+		curObj = model2.createResource(objIdRef.toString());
+		curObj.addProperty(gReview, review1);
+		
+		for (int i = 2; i <= numActions; i++){
+			StringBuffer reviewRef = new StringBuffer(hwgs).append("review").append(i);
+			Resource review = model2.createResource(reviewRef.toString());
+			StringBuffer reviewObjRef = new StringBuffer(hwgs).append("o").append(i).append("v0");
+			Resource resource = model2.createResource(reviewObjRef.toString());
+			review.addProperty(uInput, curObj);
+			resource.addProperty(gReview, review);
+		
+		}
 		
 		// grade process here
+		grade1.addProperty(uInput, curObj).addProperty(controlledBy, au3);
+		objIdRef = new StringBuffer(hwgs).append("o3v0");
+		curObj = model2.createResource(objIdRef.toString());
+		curObj.addProperty(gGrade, grade1);
+		
+		// print out model in triples form
 		printModel(model2);
 	}
 	
