@@ -1,6 +1,6 @@
 <Policy PolicyId="SubmitPolicy"
 	RuleCombiningAlgId="urn:oasis:names:tc:xacml:1.0:rule-combining-algorithm:ordered-permit-overrides">
-	<Description>To be written...</Description>
+	<Description>A user can submit a homework if she uploaded it and the homework is not submitted already. (work flow control)</Description>
 	<Target>
 		<Subjects>
 			<AnySubject />

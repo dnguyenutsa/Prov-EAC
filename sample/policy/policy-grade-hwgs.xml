@@ -1,6 +1,6 @@
 <Policy PolicyId="GradePolicy"
 	RuleCombiningAlgId="urn:oasis:names:tc:xacml:1.0:rule-combining-algorithm:ordered-permit-overrides">
-	<Description>To be written...</Description>
+	<Description>A user can grade a homework if the homework is reviewed but not graded yet.</Description>
 	<Target>
 		<Subjects>
 			<AnySubject />

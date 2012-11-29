@@ -62,6 +62,9 @@ public class RegularPathQueryFunction extends FunctionBase{
 		// obtain Jena model from memory
 		// can later provide interface to SDB
 		Model hwgsModel = DataGenerator.getModelInstance(); 
+		Model hwgsLargeModel = DataGenerator.getLargeModelInstance(10000); 
+		
+		hwgsModel = hwgsLargeModel; // for testing
 		
 		// obtain dependency list
 		Map<String,String> hwgsDepenList = DependencyStore.createNewDepList();

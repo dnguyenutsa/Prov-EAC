@@ -1,6 +1,6 @@
 <Policy PolicyId="GeneratedPolicy"
 	RuleCombiningAlgId="urn:oasis:names:tc:xacml:1.0:rule-combining-algorithm:ordered-permit-overrides">
-	<Description>To be written...</Description>
+	<Description>A user can replace a homework if she uploaded it (origin-based control) and the homework is not submitted yet.</Description>
 	<Target>
 		<Subjects>
 			<AnySubject />

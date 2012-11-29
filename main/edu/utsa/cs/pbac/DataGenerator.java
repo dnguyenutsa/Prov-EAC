@@ -2,6 +2,8 @@ package edu.utsa.cs.pbac;
 
 import java.io.FileInputStream;
 import java.io.InputStream;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 
 import com.hp.hpl.jena.query.Query;
@@ -202,7 +204,7 @@ public class DataGenerator {
 //		manualGeneration();
 		
 		// generate sample model to mock large graph
-		generateLargeModel(1000);
+		generateLargeModel(100000);
 		
 		// generate new dependency list and populate with sample data
 		Map<String, String> localDList = DependencyStore.createNewDepList();
@@ -218,7 +220,12 @@ public class DataGenerator {
 		return model1;
 	}
 
-
+	public static Model getLargeModelInstance(int numAct){
+		if (model2 == null)
+			generateLargeModel(numAct);
+		return model2;
+	}
+	
 	private static Model generateModelFromRDFFile(String filename) {
 		Model modelFromFile = ModelFactory.createDefaultModel();
 		//		modelFromFile.read(filename);
@@ -237,5 +244,10 @@ public class DataGenerator {
 	}
 
 
+	private List<String> generateAgentID(){
+		ArrayList<String> retArray = new ArrayList<String>();
+		
+		return retArray;
+	}
 
 }
