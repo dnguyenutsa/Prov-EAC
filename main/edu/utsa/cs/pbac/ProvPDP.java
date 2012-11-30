@@ -45,6 +45,7 @@ package edu.utsa.cs.pbac;
  */
 
 
+import com.hp.hpl.jena.rdf.model.Model;
 import com.sun.xacml.ConfigurationStore; 
 import com.sun.xacml.Indenter;
 import com.sun.xacml.ParsingException;
@@ -220,10 +221,19 @@ public class ProvPDP
 
 			simplePDP = new ProvPDP(policyFiles);
 		}
+		
+		// Generate graph model here to avoid overhead in evaluation
+		Model hwgsModel = DataGenerator.getModelInstance(); 
+		Model hwgsLargeModel = DataGenerator.getLargeModelInstance(10000); 
 
 		// evaluate the request
+		long startTime = System.nanoTime(); // start timer
 		ResponseCtx response = simplePDP.evaluate(requestFile);
-
+		long endTime = System.nanoTime(); // end timer
+		
+		long duration = endTime - startTime;
+		System.out.println("Evaluation Time: " + duration);
+		
 		// for this sample program, we'll just print out the response
 		response.encode(System.out, new Indenter());
 	}

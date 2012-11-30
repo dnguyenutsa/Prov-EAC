@@ -22,7 +22,7 @@
 
 	<Rule RuleId="SubmitRule" Effect="Permit">
 		<Condition FunctionId="urn:oasis:names:tc:xacml:1.0:function:and">
-			<Apply FunctionId="urn:oasis:names:tc:xacml:1.0:function:not">
+<!-- 			<Apply FunctionId="urn:oasis:names:tc:xacml:1.0:function:not">
 				<Apply FunctionId="urn:oasis:names:tc:xacml:1.0:function:string-is-in">
 					<Apply FunctionId="urn:oasis:names:tc:xacml:1.0:function:string-one-and-only">
 						<SubjectAttributeDesignator
@@ -41,7 +41,7 @@
 						</AttributeValue>
 					</Apply>
 				</Apply>
-			</Apply>
+			</Apply> -->
 
 			<Apply FunctionId="urn:oasis:names:tc:xacml:1.0:function:not">
 				<Apply FunctionId="urn:oasis:names:tc:xacml:1.0:function:string-is-in">
@@ -64,7 +64,7 @@
 				</Apply>
 			</Apply>
 
-			<Apply FunctionId="urn:oasis:names:tc:xacml:1.0:function:integer-greater-than">
+<!-- 			<Apply FunctionId="urn:oasis:names:tc:xacml:1.0:function:integer-greater-than">
 				<Apply FunctionId="urn:oasis:names:tc:xacml:1.0:function:string-bag-size">
 					<Apply FunctionId="regular-path-query-function">
 						<Apply FunctionId="urn:oasis:names:tc:xacml:1.0:function:string-one-and-only">
@@ -79,9 +79,9 @@
 					</Apply>
 				</Apply>
 				<AttributeValue DataType="http://www.w3.org/2001/XMLSchema#integer">0</AttributeValue>
-			</Apply>
+			</Apply> -->
 
-			<Apply FunctionId="urn:oasis:names:tc:xacml:1.0:function:integer-equal">
+<!-- 			<Apply FunctionId="urn:oasis:names:tc:xacml:1.0:function:integer-equal">
 				<AttributeValue DataType="http://www.w3.org/2001/XMLSchema#integer">0</AttributeValue>
 				<Apply FunctionId="urn:oasis:names:tc:xacml:1.0:function:string-bag-size">
 					<Apply FunctionId="regular-path-query-function">
@@ -96,7 +96,7 @@
 						</AttributeValue>
 					</Apply>
 				</Apply>
-			</Apply>
+			</Apply> -->
 		</Condition>
 	</Rule>
 

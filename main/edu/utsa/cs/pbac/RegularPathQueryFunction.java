@@ -47,6 +47,16 @@ public class RegularPathQueryFunction extends FunctionBase{
 		if (result != null)
 			return result;
 
+		// obtain Jena model from memory
+		// can later provide interface to SDB
+		Model hwgsModel = DataGenerator.getModelInstance(); 
+		Model hwgsLargeModel = DataGenerator.getLargeModelInstance(10000); 
+		
+		hwgsModel = hwgsLargeModel; // for testing
+		
+		// obtain dependency list
+		Map<String,String> hwgsDepenList = DependencyStore.createNewDepList();
+		
 		// cast the resolved values into specific types
 		// assuming the order of parameters to function
 		// starting node is an objectId, on which, the regular path pattern
@@ -59,16 +69,6 @@ public class RegularPathQueryFunction extends FunctionBase{
 		String depenNameStr = depenName.getValue();
 		String queryType = ((StringAttribute) (argValues[2])).getValue().trim();
 
-		// obtain Jena model from memory
-		// can later provide interface to SDB
-		Model hwgsModel = DataGenerator.getModelInstance(); 
-		Model hwgsLargeModel = DataGenerator.getLargeModelInstance(10000); 
-		
-		hwgsModel = hwgsLargeModel; // for testing
-		
-		// obtain dependency list
-		Map<String,String> hwgsDepenList = DependencyStore.createNewDepList();
-		
 		if (queryType.equalsIgnoreCase("UserAuthorization")){
 			
 			String wasAuthoredBy = hwgsDepenList.get(depenNameStr.trim());

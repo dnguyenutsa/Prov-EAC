@@ -150,6 +150,7 @@ public class DataGenerator {
 		curObj = model2.createResource(objRef.toString());
 		curObj.addProperty(gSubmit, submit1);
 		
+		System.out.println(curObj.getLocalName());
 		// review process here
 		// note we can generate large number of reviewers to simulate breadth
 		int objId = 2;
@@ -159,14 +160,17 @@ public class DataGenerator {
 		curObj = model2.createResource(objIdRef.toString());
 		curObj.addProperty(gReview, review1);
 		
+		numActions = 100000;
+		
 		for (int i = 2; i <= numActions; i++){
 			StringBuffer reviewRef = new StringBuffer(hwgs).append("review").append(i);
 			Resource review = model2.createResource(reviewRef.toString());
 			StringBuffer reviewObjRef = new StringBuffer(hwgs).append("o").append(i).append("v0");
 			Resource resource = model2.createResource(reviewObjRef.toString());
-			review.addProperty(uInput, curObj);
+			review.addProperty(uInput, curObj).addProperty(controlledBy, au3)
+			.addProperty(controlledBy, au2).addProperty(controlledBy, au1);
 			resource.addProperty(gReview, review);
-		
+			System.out.println("resource " + resource.getURI());
 		}
 		
 		// grade process here
@@ -176,7 +180,7 @@ public class DataGenerator {
 		curObj.addProperty(gGrade, grade1);
 		
 		// print out model in triples form
-		printModel(model2);
+//		printModel(model2);
 	}
 	
 	// Data generation from RDF file

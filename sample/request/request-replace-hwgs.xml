@@ -2,13 +2,13 @@
 	<Subject SubjectCategory="urn:oasis:names:tc:xacml:1.0:subject-category:access-subject">
 		<Attribute AttributeId="urn:oasis:names:tc:xacml:1.0:subject:subject-id"
 			DataType="http://www.w3.org/2001/XMLSchema#string">
-			<AttributeValue>au1</AttributeValue>
+			<AttributeValue>au2</AttributeValue>
 		</Attribute>
 	</Subject>
 	<Resource>
 		<Attribute AttributeId="urn:oasis:names:tc:xacml:1.0:resource:resource-id"
 			DataType="http://www.w3.org/2001/XMLSchema#string">
-			<AttributeValue>o1v1</AttributeValue>
+			<AttributeValue>o1v6200</AttributeValue>
 		</Attribute>
 	</Resource>
 	<Action>
