@@ -49,10 +49,10 @@ public class RegularPathQueryFunction extends FunctionBase{
 
 		// obtain Jena model from memory
 		// can later provide interface to SDB
-		Model hwgsModel = DataGenerator.getModelInstance(); 
-		Model hwgsLargeModel = DataGenerator.getLargeModelInstance(10000); 
+//		Model hwgsModel = DataGenerator.getModelInstance(); 
+//		Model hwgsLargeModel = DataGenerator.getLargeModelInstance(10000); 
 		
-		hwgsModel = hwgsLargeModel; // for testing
+		Model hwgsModel = ProvPDP.getLargeModel(); // for testing
 		
 		// obtain dependency list
 		Map<String,String> hwgsDepenList = DependencyStore.createNewDepList();
@@ -77,7 +77,7 @@ public class RegularPathQueryFunction extends FunctionBase{
 			qStr += "\n" + 
 					"SELECT ?agent WHERE { hw:" + startingNodeStr + " " + wasAuthoredBy
 					+ " ?agent. }";
-			System.out.println(qStr);
+//			System.out.println(qStr);
 			Query q = QueryFactory.create(qStr);
 			QueryExecution qexec= QueryExecutionFactory.create( q, hwgsModel );
 			ResultSet rs= qexec.execSelect();
@@ -88,6 +88,7 @@ public class RegularPathQueryFunction extends FunctionBase{
 				String entry = rs.next().getResource("?agent").toString();
 
 				entry = entry.replaceAll(DataGenerator.hwgs, "");
+//				System.out.println("entry " + entry);
 				results.add(new StringAttribute(entry));
 			}
 

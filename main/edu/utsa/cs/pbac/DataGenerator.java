@@ -5,6 +5,7 @@ import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Random;
 
 import com.hp.hpl.jena.query.Query;
 import com.hp.hpl.jena.query.QueryExecution;
@@ -24,7 +25,143 @@ import com.hp.hpl.jena.vocabulary.DC;
 public class DataGenerator {
 	static Model model1, model2;
 	public static String hwgs = "http://peac/hwgs#";
-	
+
+
+	/*
+	 * This method is used to generate sample RDF model with large number of triples.
+	 *
+	 */
+	private static void generateLargeModel(int numActions){
+		model2 = ModelFactory.createDefaultModel();
+
+		Resource o1v1 = model2.createResource(hwgs + "o1v0");
+
+		Resource upload1 = model2.createResource(hwgs + "upload1");
+
+		Resource submit1 = model2.createResource(hwgs + "submit1");
+		Resource review1 = model2.createResource(hwgs + "review1");
+		Resource grade1 = model2.createResource(hwgs + "grade1");
+
+		Resource au1 = model2.createResource(hwgs + "au1");
+		Resource au2 = model2.createResource(hwgs + "au2");
+		Resource au3 = model2.createResource(hwgs + "au3");
+
+		Property gUpload = model2.createProperty(hwgs, "wasGeneratedByUpload");
+		Property gReplace = model2.createProperty(hwgs, "wasGeneratedByReplace");
+		Property controlledBy = model2.createProperty(hwgs, "wasControlledBy");
+		Property gSubmit = model2.createProperty(hwgs, "wasGeneratedBySubmit");
+		Property gReview = model2.createProperty(hwgs, "wasGeneratedByReview");
+		Property gGrade = model2.createProperty(hwgs, "wasGeneratedByGrade");
+		Property uInput = model2.createProperty(hwgs, "usedInput");
+
+		// au1 uploads a homework
+		// note here we can generate multiple instances of au_x to simulate
+		// disjoint graphs/models
+		o1v1.addProperty(gUpload, (upload1));
+		upload1.addProperty(controlledBy, au1);
+
+		// au1 replaced it arbitrary number of times
+		// here we generate large number of replace to simulate depth
+		Resource prevObj = o1v1;
+		Resource curObj = null;
+		for (int i = 1; i <= numActions; i++){
+			StringBuffer objRef = new StringBuffer(hwgs).append("o1v").append(i);
+			curObj = model2.createResource(objRef.toString());
+			StringBuffer replaceRef = new StringBuffer(hwgs).append("replace").append(i);
+			Resource replace = model2.createResource(replaceRef.toString());
+
+			replace.addProperty(uInput, prevObj).addProperty(controlledBy, au1);
+			curObj.addProperty(gReplace, replace);
+			prevObj = curObj;
+		}
+
+		// au1 submitted the latest replaced homework version
+		//		if (curObj == null)
+		//			System.err.println("curObj is null");
+		submit1.addProperty(uInput, prevObj);
+		submit1.addProperty(controlledBy, au1);
+		StringBuffer objRef = new StringBuffer(hwgs).append("o1v").append(numActions+1);
+		curObj = model2.createResource(objRef.toString());
+		curObj.addProperty(gSubmit, submit1);
+
+//		System.out.println("current local: " + curObj.getLocalName());
+		// review process here
+		// note we can generate large number of reviewers to simulate breadth
+		int objId = 2;
+		review1.addProperty(uInput, curObj).addProperty(controlledBy, au2);
+		StringBuffer objIdRef = new StringBuffer(hwgs).append("o").append(objId)
+				.append("v0");
+		curObj = model2.createResource(objIdRef.toString());
+		curObj.addProperty(gReview, review1);
+
+		numActions = 6000;
+		Random rand = new Random();
+
+		for (int i = 2; i <= numActions; i++){
+			StringBuffer reviewRef = new StringBuffer(hwgs).append("review").append(i);
+			Resource review = model2.createResource(reviewRef.toString());
+			StringBuffer reviewObjRef = new StringBuffer(hwgs).append("o").append(i).append("v0");
+			Resource resource = model2.createResource(reviewObjRef.toString());
+			
+			Resource au = model2.createResource(hwgs + "au" + rand.nextInt(numActions));
+//			System.out.println(au.getURI());
+//			System.out.println(curObj.getURI());
+			review.addProperty(uInput, curObj)
+//			.addProperty(controlledBy, au);
+			.addProperty(controlledBy, au3).addProperty(controlledBy, au2).addProperty(controlledBy, au1);
+			resource.addProperty(gReview, review);
+//			System.out.println("resource " + resource.getURI());
+		}
+
+		// grade process here
+		grade1.addProperty(uInput, curObj).addProperty(controlledBy, au3);
+		objIdRef = new StringBuffer(hwgs).append("o3v0");
+		curObj = model2.createResource(objIdRef.toString());
+		curObj.addProperty(gGrade, grade1);
+
+		// print out model in triples form
+		//		printModel(model2);
+		
+		// test queries
+/*		String qStr = "PREFIX hw: <http://peac/hwgs#>";
+		qStr += "\n" + 
+				"SELECT ?agent WHERE { hw:o1v100001 ^hw:usedInput ?agent. }";
+		System.out.println(qStr);
+		Query q = QueryFactory.create(qStr);
+		QueryExecution qexec= QueryExecutionFactory.create( q, model2 );
+		ResultSet rs= qexec.execSelect();
+		
+		while (rs.hasNext()){
+			System.out.println(rs.next());
+		}*/
+
+	}
+
+	// Data generation from RDF file
+	static public void printModel(Model m){
+
+		// list the statements in Model m
+		StmtIterator iter = m.listStatements();
+
+		// print out the predicate, subject and object of each statement
+		while (iter.hasNext()){
+			Statement stmt = iter.nextStatement();
+			Resource subject = stmt.getSubject();
+			Property predicate = stmt.getPredicate();
+			RDFNode object = stmt.getObject();
+
+			System.out.print(subject.toString());
+			System.out.print(" " + predicate.toString() + " ");
+			if (object instanceof Resource) {
+				System.out.print(object.toString());
+			} else {
+				// object is a literal
+				System.out.print(" \"" + object.toString() + "\"");
+			}
+			System.out.println(" .");
+		}
+	}
+
 	/*
 	 * This method is used to generate the RDF model of
 	 * the provenance example of a HWGS in PST12 presentation slides.
@@ -82,7 +219,7 @@ public class DataGenerator {
 		for ( ; rs.hasNext() ;){
 			String entry = rs.next().getResource("?process").toString();
 		}
-		
+
 		String auid = "au1";
 		String queryString = prefix;
 		queryString += "\n" +
@@ -93,120 +230,6 @@ public class DataGenerator {
 
 	}
 
-	/*
-	 * This method is used to generate sample RDF model with large number of triples.
-	 *
-	 */
-	private static void generateLargeModel(int numActions){
-		model2 = ModelFactory.createDefaultModel();
-		
-		Resource o1v1 = model2.createResource(hwgs + "o1v0");
-
-		Resource upload1 = model2.createResource(hwgs + "upload1");
-		
-		Resource submit1 = model2.createResource(hwgs + "submit1");
-		Resource review1 = model2.createResource(hwgs + "review1");
-		Resource grade1 = model2.createResource(hwgs + "grade1");
-
-		Resource au1 = model2.createResource(hwgs + "au1");
-		Resource au2 = model2.createResource(hwgs + "au2");
-		Resource au3 = model2.createResource(hwgs + "au3");
-
-		Property gUpload = model2.createProperty(hwgs, "wasGeneratedByUpload");
-		Property gReplace = model2.createProperty(hwgs, "wasGeneratedByReplace");
-		Property controlledBy = model2.createProperty(hwgs, "wasControlledBy");
-		Property gSubmit = model2.createProperty(hwgs, "wasGeneratedBySubmit");
-		Property gReview = model2.createProperty(hwgs, "wasGeneratedByReview");
-		Property gGrade = model2.createProperty(hwgs, "wasGeneratedByGrade");
-		Property uInput = model2.createProperty(hwgs, "usedInput");
-		
-		// au1 uploads a homework
-		// note here we can generate multiple instances of au_x to simulate
-		// disjoint graphs/models
-		o1v1.addProperty(gUpload, (upload1));
-		upload1.addProperty(controlledBy, au1);
-		
-		// au1 replaced it arbitrary number of times
-		// here we generate large number of replace to simulate depth
-		Resource prevObj = o1v1;
-		Resource curObj = null;
-		for (int i = 1; i <= numActions; i++){
-			StringBuffer objRef = new StringBuffer(hwgs).append("o1v").append(i);
-			curObj = model2.createResource(objRef.toString());
-			StringBuffer replaceRef = new StringBuffer(hwgs).append("replace").append(i);
-			Resource replace = model2.createResource(replaceRef.toString());
-			
-			replace.addProperty(uInput, prevObj).addProperty(controlledBy, au1);
-			curObj.addProperty(gReplace, replace);
-			prevObj = curObj;
-		}
-		
-		// au1 submitted the latest replaced homework version
-//		if (curObj == null)
-//			System.err.println("curObj is null");
-		submit1.addProperty(uInput, prevObj);
-		submit1.addProperty(controlledBy, au1);
-		StringBuffer objRef = new StringBuffer(hwgs).append("o1v").append(numActions+1);
-		curObj = model2.createResource(objRef.toString());
-		curObj.addProperty(gSubmit, submit1);
-		
-		System.out.println(curObj.getLocalName());
-		// review process here
-		// note we can generate large number of reviewers to simulate breadth
-		int objId = 2;
-		review1.addProperty(uInput, curObj).addProperty(controlledBy, au2);
-		StringBuffer objIdRef = new StringBuffer(hwgs).append("o").append(objId)
-				.append("v0");
-		curObj = model2.createResource(objIdRef.toString());
-		curObj.addProperty(gReview, review1);
-		
-		numActions = 100000;
-		
-		for (int i = 2; i <= numActions; i++){
-			StringBuffer reviewRef = new StringBuffer(hwgs).append("review").append(i);
-			Resource review = model2.createResource(reviewRef.toString());
-			StringBuffer reviewObjRef = new StringBuffer(hwgs).append("o").append(i).append("v0");
-			Resource resource = model2.createResource(reviewObjRef.toString());
-			review.addProperty(uInput, curObj).addProperty(controlledBy, au3)
-			.addProperty(controlledBy, au2).addProperty(controlledBy, au1);
-			resource.addProperty(gReview, review);
-			System.out.println("resource " + resource.getURI());
-		}
-		
-		// grade process here
-		grade1.addProperty(uInput, curObj).addProperty(controlledBy, au3);
-		objIdRef = new StringBuffer(hwgs).append("o3v0");
-		curObj = model2.createResource(objIdRef.toString());
-		curObj.addProperty(gGrade, grade1);
-		
-		// print out model in triples form
-//		printModel(model2);
-	}
-	
-	// Data generation from RDF file
-	static public void printModel(Model m){
-
-		// list the statements in Model m
-		StmtIterator iter = m.listStatements();
-
-		// print out the predicate, subject and object of each statement
-		while (iter.hasNext()){
-			Statement stmt = iter.nextStatement();
-			Resource subject = stmt.getSubject();
-			Property predicate = stmt.getPredicate();
-			RDFNode object = stmt.getObject();
-
-			System.out.print(subject.toString());
-			System.out.print(" " + predicate.toString() + " ");
-			if (object instanceof Resource) {
-				System.out.print(object.toString());
-			} else {
-				// object is a literal
-				System.out.print(" \"" + object.toString() + "\"");
-			}
-			System.out.println(" .");
-		}
-	}
 
 	private static void populateSampleDList(Map<String, String> localDList) {
 
@@ -223,17 +246,17 @@ public class DataGenerator {
 
 		// generate sample mock data based on grading system scenario
 		// simplified scenario from pbac presentation slides
-//		manualGeneration();
-		
+		//		manualGeneration();
+
 		// generate sample model to mock large graph
 		generateLargeModel(100000);
-		
+
 		// generate new dependency list and populate with sample data
 		Map<String, String> localDList = DependencyStore.createNewDepList();
 		populateSampleDList(localDList);
 
-//		System.out.println(System.getProperty("C:\\Users\\dnguyen\\workspace\\Prov-EAC\\jena.rdf"));
-//		Model rdfmodel = generateModelFromRDFFile("C:\\Users\\dnguyen\\workspace\\Prov-EAC\\jena.rdf");
+		//		System.out.println(System.getProperty("C:\\Users\\dnguyen\\workspace\\Prov-EAC\\jena.rdf"));
+		//		Model rdfmodel = generateModelFromRDFFile("C:\\Users\\dnguyen\\workspace\\Prov-EAC\\jena.rdf");
 	}
 
 	public static Model getModelInstance(){
@@ -247,7 +270,7 @@ public class DataGenerator {
 			generateLargeModel(numAct);
 		return model2;
 	}
-	
+
 	private static Model generateModelFromRDFFile(String filename) {
 		Model modelFromFile = ModelFactory.createDefaultModel();
 		//		modelFromFile.read(filename);
@@ -268,7 +291,7 @@ public class DataGenerator {
 
 	private List<String> generateAgentID(){
 		ArrayList<String> retArray = new ArrayList<String>();
-		
+
 		return retArray;
 	}
 

@@ -1,6 +1,8 @@
 <Policy PolicyId="SubmitPolicy"
 	RuleCombiningAlgId="urn:oasis:names:tc:xacml:1.0:rule-combining-algorithm:ordered-permit-overrides">
-	<Description>A user can review a homework if she is not the author of the homework (DSOD), the user did not review the homework earlier, and the homework is submitted already but not graded yet</Description>
+	<Description>A user can review a homework if she is not the author of the homework (DSOD), 
+	the user did not review the homework earlier, 
+	and the homework is submitted already but not graded yet</Description>
 	<Target>
 		<Subjects>
 			<AnySubject />

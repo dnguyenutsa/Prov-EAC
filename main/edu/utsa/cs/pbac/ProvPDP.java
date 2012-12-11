@@ -92,6 +92,7 @@ public class ProvPDP
 
 	// this is the actual PDP object we'll use for evaluation
 	private PDP pdp = null;
+	static Model hwgsLargeModel; 
 
 	/**
 	 * Default constructor. This creates a <code>SimplePDP</code> with a
@@ -136,7 +137,7 @@ public class ProvPDP
 		// support a basic implementation)
 		CurrentEnvModule envAttributeModule = new CurrentEnvModule();
 		SelectorModule selectorAttributeModule = new SelectorModule();
-//		LoadEnvModule aLoadEnvModule = new LoadEnvModule();
+		//		LoadEnvModule aLoadEnvModule = new LoadEnvModule();
 
 		// Setup the AttributeFinder just like we setup the PolicyFinder. Note
 		// that unlike with the policy finder, the order matters here. See the
@@ -221,21 +222,36 @@ public class ProvPDP
 
 			simplePDP = new ProvPDP(policyFiles);
 		}
-		
+
+		initializeModel();
+
 		// Generate graph model here to avoid overhead in evaluation
-		Model hwgsModel = DataGenerator.getModelInstance(); 
+		//		Model hwgsModel = DataGenerator.getModelInstance(); 
 		Model hwgsLargeModel = DataGenerator.getLargeModelInstance(10000); 
 
 		// evaluate the request
-		long startTime = System.nanoTime(); // start timer
-		ResponseCtx response = simplePDP.evaluate(requestFile);
-		long endTime = System.nanoTime(); // end timer
-		
-		long duration = endTime - startTime;
-		System.out.println("Evaluation Time: " + duration);
-		
+		for (int i = 0; i <= 10; i++){
+			long startTime = System.nanoTime(); // start timer
+			ResponseCtx response = simplePDP.evaluate(requestFile);
+			long endTime = System.nanoTime(); // end timer
+
+			long duration = endTime - startTime;
+			//			System.out.println("Evaluation Time Run #" + i + ": " + duration);
+			System.out.println(duration);
+		}
 		// for this sample program, we'll just print out the response
+		ResponseCtx response = simplePDP.evaluate(requestFile);
 		response.encode(System.out, new Indenter());
+	}
+
+	private static void initializeModel() {
+		hwgsLargeModel = DataGenerator.getLargeModelInstance(10000);		
+	}
+	
+	public static Model getLargeModel(){
+		if (hwgsLargeModel == null)
+			initializeModel();
+		return hwgsLargeModel;
 	}
 
 }
