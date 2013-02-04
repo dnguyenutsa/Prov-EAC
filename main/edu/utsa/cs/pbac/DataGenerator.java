@@ -21,6 +21,7 @@ import com.hp.hpl.jena.rdf.model.Resource;
 import com.hp.hpl.jena.rdf.model.Statement;
 import com.hp.hpl.jena.rdf.model.StmtIterator;
 import com.hp.hpl.jena.vocabulary.DC;
+import com.sun.xacml.ctx.ResponseCtx;
 
 public class DataGenerator {
 	static Model model1, model2;
@@ -84,7 +85,7 @@ public class DataGenerator {
 		curObj = model2.createResource(objRef.toString());
 		curObj.addProperty(gSubmit, submit1);
 
-//		System.out.println("current local: " + curObj.getLocalName());
+		//		System.out.println("current local: " + curObj.getLocalName());
 		// review process here
 		// note we can generate large number of reviewers to simulate breadth
 		int objId = 2;
@@ -102,15 +103,15 @@ public class DataGenerator {
 			Resource review = model2.createResource(reviewRef.toString());
 			StringBuffer reviewObjRef = new StringBuffer(hwgs).append("o").append(i).append("v0");
 			Resource resource = model2.createResource(reviewObjRef.toString());
-			
+
 			Resource au = model2.createResource(hwgs + "au" + rand.nextInt(numActions));
-//			System.out.println(au.getURI());
-//			System.out.println(curObj.getURI());
+			//			System.out.println(au.getURI());
+			//			System.out.println(curObj.getURI());
 			review.addProperty(uInput, curObj)
-//			.addProperty(controlledBy, au);
+			//			.addProperty(controlledBy, au);
 			.addProperty(controlledBy, au3).addProperty(controlledBy, au2).addProperty(controlledBy, au1);
 			resource.addProperty(gReview, review);
-//			System.out.println("resource " + resource.getURI());
+			//			System.out.println("resource " + resource.getURI());
 		}
 
 		// grade process here
@@ -119,21 +120,27 @@ public class DataGenerator {
 		curObj = model2.createResource(objIdRef.toString());
 		curObj.addProperty(gGrade, grade1);
 
-		// print out model in triples form
-		//		printModel(model2);
-		
 		// test queries
-/*		String qStr = "PREFIX hw: <http://peac/hwgs#>";
+		String qStr = "PREFIX hw: <http://peac/hwgs#>";
 		qStr += "\n" + 
-				"SELECT ?agent WHERE { hw:o1v100001 ^hw:usedInput ?agent. }";
-		System.out.println(qStr);
-		Query q = QueryFactory.create(qStr);
-		QueryExecution qexec= QueryExecutionFactory.create( q, model2 );
-		ResultSet rs= qexec.execSelect();
-		
-		while (rs.hasNext()){
-			System.out.println(rs.next());
-		}*/
+				"SELECT ?agent WHERE { hw:o2v0 ^hw:usedInput/hw:wasControlledBy ?agent. }";
+//		System.out.println(qStr);
+
+
+//		for (int i = 0; i < 20; i++){
+//			long startTime = System.nanoTime(); // start timer
+//			Query q = QueryFactory.create(qStr);
+//			QueryExecution qexec= QueryExecutionFactory.create( q, model2 );
+//			ResultSet rs= qexec.execSelect();
+//			long endTime = System.nanoTime(); // end timer
+//
+//			long duration = endTime - startTime;
+//			//			System.out.println("Evaluation Time Run #" + i + ": " + duration);
+//			System.out.println(duration);
+//		}
+		//		while (rs.hasNext()){
+		//			System.out.println(rs.next());
+		//		}
 
 	}
 
@@ -220,13 +227,21 @@ public class DataGenerator {
 			String entry = rs.next().getResource("?process").toString();
 		}
 
+
 		String auid = "au1";
 		String queryString = prefix;
 		queryString += "\n" +
 				"SELECT ?artifact WHERE { ?artifact (hw:wasGeneratedBySubmit/hw:wasControlledBy) hw:"+auid+". }";
 		Query query = QueryFactory.create(queryString);
 		qexec= QueryExecutionFactory.create( query, model1 );
+		long startTime = System.nanoTime(); // start timer
 		rs= qexec.execSelect();
+		long endTime = System.nanoTime(); // end timer
+
+		long duration = endTime - startTime;
+		//			System.out.println("Evaluation Time Run #" + i + ": " + duration);
+		System.out.println(duration);
+
 
 	}
 

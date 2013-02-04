@@ -106,7 +106,7 @@ public class RegularPathQueryFunction extends FunctionBase{
 			qStr += "\n" + 
 					"SELECT ?artifact WHERE { hw:" + startingNodeStr + " " + wasSubmittedVof
 					+ " ?artifact. }";
-			System.out.println(qStr);
+//			System.out.println(qStr);
 			Query q = QueryFactory.create(qStr);
 			QueryExecution qexec= QueryExecutionFactory.create( q, hwgsModel );
 			ResultSet rs= qexec.execSelect();

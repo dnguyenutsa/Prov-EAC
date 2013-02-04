@@ -66,6 +66,7 @@ import com.sun.xacml.finder.impl.CurrentEnvModule;
 import com.sun.xacml.finder.impl.FilePolicyModule;
 import com.sun.xacml.finder.impl.SelectorModule;
 
+import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 
@@ -93,6 +94,7 @@ public class ProvPDP
 	// this is the actual PDP object we'll use for evaluation
 	private PDP pdp = null;
 	static Model hwgsLargeModel; 
+	static int thrdcount = 0;
 
 	/**
 	 * Default constructor. This creates a <code>SimplePDP</code> with a
@@ -227,8 +229,115 @@ public class ProvPDP
 
 		// Generate graph model here to avoid overhead in evaluation
 		//		Model hwgsModel = DataGenerator.getModelInstance(); 
-		Model hwgsLargeModel = DataGenerator.getLargeModelInstance(10000); 
+		Model hwgsLargeModel = DataGenerator.getLargeModelInstance(6000); 
+		// warmup run
+		ResponseCtx response = simplePDP.evaluate(requestFile);
+		response.encode(System.out, new Indenter());
+		
+		// evaluate single request
+//		evaluateOneRequest(simplePDP, requestFile);
 
+		// evaluate multiple requests
+
+		String currentDir = System.getProperty("user.dir");
+		
+		// for 50 requests
+		File requestFolder = new File(currentDir + "/sample/request-50/");
+		
+		long startTime = System.nanoTime(); // start timer
+//		evaluateMultipleRequests(simplePDP, requestFolder);
+//		while (thrdcount < 50)
+//			Thread.sleep(100);
+		long endTime = System.nanoTime(); // end timer
+		long duration = endTime - startTime;
+//		System.out.println(duration);
+		
+		// for 100 requests
+//		requestFolder = new File(currentDir + "/sample/request-100/");
+//		
+//		startTime = System.nanoTime(); // start timer
+//		evaluateMultipleRequests(simplePDP, requestFolder);
+//		while (thrdcount < 100)
+//			Thread.sleep(100);
+//		endTime = System.nanoTime(); // end timer
+//		duration = endTime - startTime;
+//		System.out.println(duration);
+		
+		// for 200 requests
+//		requestFolder = new File(currentDir + "/sample/request-200/");
+//		
+//		startTime = System.nanoTime(); // start timer
+//		evaluateMultipleRequests(simplePDP, requestFolder);
+//		while (thrdcount < 200)
+//			Thread.sleep(100);
+//		endTime = System.nanoTime(); // end timer
+//		duration = endTime - startTime;
+//		System.out.println(duration);
+		
+		// for 400 requests
+//		requestFolder = new File(currentDir + "/sample/request-400/");
+//		
+//		startTime = System.nanoTime(); // start timer
+//		evaluateMultipleRequests(simplePDP, requestFolder);
+//		while (thrdcount < 400)
+//			Thread.sleep(100);
+//		endTime = System.nanoTime(); // end timer
+//		duration = endTime - startTime;
+//		System.out.println(duration);
+		
+		// for 800 requests
+		requestFolder = new File(currentDir + "/sample/request-800/");
+		
+		startTime = System.nanoTime(); // start timer
+		evaluateMultipleRequests(simplePDP, requestFolder);
+		while (thrdcount < 800)
+			Thread.sleep(100);
+		endTime = System.nanoTime(); // end timer
+		duration = endTime - startTime;
+		System.out.println(duration);
+
+	}
+
+	private static void evaluateMultipleRequests(ProvPDP simplePDP, File folderName){
+		File[] listOfFiles = folderName.listFiles();
+
+		for (File file : listOfFiles) {
+			if (file.isFile()) {
+//				System.out.println(file.getAbsolutePath());
+				RequestHandleThread reqThread = new RequestHandleThread(simplePDP, file.getAbsolutePath());
+				reqThread.start();
+			}
+		}
+		
+
+	}
+
+	private static class RequestHandleThread extends Thread {
+		private ProvPDP simplePDP;
+		private String requestFile;
+
+		public RequestHandleThread(ProvPDP simplePDP, String requestFile){
+			this.simplePDP = simplePDP;
+			this.requestFile = requestFile;
+		}
+
+		public void run(){
+			ResponseCtx response;
+			try {
+				response = simplePDP.evaluate(requestFile);
+//				response.encode(System.out, new Indenter());
+			} catch (IOException e) {
+				e.printStackTrace();
+			} catch (ParsingException e) {
+				e.printStackTrace();
+			}
+			long threadId = Thread.currentThread().getId();
+			System.out.println(threadId + " is done.");
+			System.out.println(++thrdcount);
+		}
+	}
+
+	private static void evaluateOneRequest(ProvPDP simplePDP, String requestFile) throws Exception{
 		// evaluate the request
 		for (int i = 0; i <= 10; i++){
 			long startTime = System.nanoTime(); // start timer
@@ -247,7 +356,7 @@ public class ProvPDP
 	private static void initializeModel() {
 		hwgsLargeModel = DataGenerator.getLargeModelInstance(10000);		
 	}
-	
+
 	public static Model getLargeModel(){
 		if (hwgsLargeModel == null)
 			initializeModel();
