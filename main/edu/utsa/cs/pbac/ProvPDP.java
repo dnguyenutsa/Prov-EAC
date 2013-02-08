@@ -237,19 +237,21 @@ public class ProvPDP
 		// evaluate single request
 //		evaluateOneRequest(simplePDP, requestFile);
 
-		// evaluate multiple requests
+		// evaluate multiple requests with parallelization
 
 		String currentDir = System.getProperty("user.dir");
 		
 		// for 50 requests
 		File requestFolder = new File(currentDir + "/sample/request-50/");
 		
-		long startTime = System.nanoTime(); // start timer
+		long startTime, endTime, duration;
+		
+//		startTime = System.nanoTime(); // start timer
 //		evaluateMultipleRequests(simplePDP, requestFolder);
 //		while (thrdcount < 50)
 //			Thread.sleep(100);
-		long endTime = System.nanoTime(); // end timer
-		long duration = endTime - startTime;
+//		endTime = System.nanoTime(); // end timer
+//		duration = endTime - startTime;
 //		System.out.println(duration);
 		
 		// for 100 requests
@@ -269,7 +271,7 @@ public class ProvPDP
 //		startTime = System.nanoTime(); // start timer
 //		evaluateMultipleRequests(simplePDP, requestFolder);
 //		while (thrdcount < 200)
-//			Thread.sleep(100);
+//			Thread.sleep(1000);
 //		endTime = System.nanoTime(); // end timer
 //		duration = endTime - startTime;
 //		System.out.println(duration);
@@ -291,11 +293,75 @@ public class ProvPDP
 		startTime = System.nanoTime(); // start timer
 		evaluateMultipleRequests(simplePDP, requestFolder);
 		while (thrdcount < 800)
-			Thread.sleep(100);
+			Thread.sleep(1000);
 		endTime = System.nanoTime(); // end timer
 		duration = endTime - startTime;
 		System.out.println(duration);
 
+		
+		// Evaluate requests without parallelization
+		
+/*		// for 50 requests
+		requestFolder = new File(currentDir + "/sample/request-50/");
+		
+		startTime = System.nanoTime(); // start timer
+		evaluateMultipleRequestsSequentially(simplePDP, requestFolder);
+		endTime = System.nanoTime(); // end timer
+		duration = endTime - startTime;
+		System.out.println(duration);
+		
+		// for 100 requests
+		requestFolder = new File(currentDir + "/sample/request-100/");
+		
+		startTime = System.nanoTime(); // start timer
+		evaluateMultipleRequestsSequentially(simplePDP, requestFolder);
+		endTime = System.nanoTime(); // end timer
+		duration = endTime - startTime;
+		System.out.println(duration);
+		
+		// for 200 requests
+		requestFolder = new File(currentDir + "/sample/request-200/");
+		
+		startTime = System.nanoTime(); // start timer
+		evaluateMultipleRequestsSequentially(simplePDP, requestFolder);
+		endTime = System.nanoTime(); // end timer
+		duration = endTime - startTime;
+		System.out.println(duration);
+		
+		// for 400 requests
+		requestFolder = new File(currentDir + "/sample/request-400/");
+		
+		startTime = System.nanoTime(); // start timer
+		evaluateMultipleRequestsSequentially(simplePDP, requestFolder);
+		endTime = System.nanoTime(); // end timer
+		duration = endTime - startTime;
+		System.out.println(duration);
+		
+		// for 800 requests
+		requestFolder = new File(currentDir + "/sample/request-800/");
+		
+		startTime = System.nanoTime(); // start timer
+		evaluateMultipleRequestsSequentially(simplePDP, requestFolder);
+		endTime = System.nanoTime(); // end timer
+		duration = endTime - startTime;
+		System.out.println(duration);*/
+	}
+	
+	private static void evaluateMultipleRequestsSequentially(ProvPDP simplePDP, File folderName){
+		File[] listOfFiles = folderName.listFiles();
+
+		for (File file : listOfFiles) {
+			if (file.isFile()) {
+				try {
+					ResponseCtx response = simplePDP.evaluate(file.getAbsolutePath());
+//					response.encode(System.out, new Indenter());
+				} catch (IOException e) {
+					e.printStackTrace();
+				} catch (ParsingException e) {
+					e.printStackTrace();
+				}
+			}
+		}
 	}
 
 	private static void evaluateMultipleRequests(ProvPDP simplePDP, File folderName){
