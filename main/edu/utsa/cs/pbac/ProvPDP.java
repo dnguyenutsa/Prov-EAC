@@ -232,10 +232,13 @@ public class ProvPDP
 		Model hwgsLargeModel = DataGenerator.getLargeModelInstance(6000); 
 		// warmup run
 		ResponseCtx response = simplePDP.evaluate(requestFile);
-		response.encode(System.out, new Indenter());
+//		response.encode(System.out, new Indenter());
+
+		
+		long startTime, endTime, duration;
 		
 		// evaluate single request
-//		evaluateOneRequest(simplePDP, requestFile);
+		evaluateOneRequest(simplePDP, requestFile);
 
 		// evaluate multiple requests with parallelization
 
@@ -244,7 +247,6 @@ public class ProvPDP
 		// for 50 requests
 		File requestFolder = new File(currentDir + "/sample/request-50/");
 		
-		long startTime, endTime, duration;
 		
 //		startTime = System.nanoTime(); // start timer
 //		evaluateMultipleRequests(simplePDP, requestFolder);
@@ -287,12 +289,17 @@ public class ProvPDP
 //		duration = endTime - startTime;
 //		System.out.println(duration);
 		
-		// for 800 requests
-		requestFolder = new File(currentDir + "/sample/request-800/");
+		// for 500 requests
+		requestFolder = new File(currentDir + "/sample/request-500-1000-width/");
+//		requestFolder = new File(currentDir + "/sample/request-500-2000/");
+//		requestFolder = new File(currentDir + "/sample/request-500-3000/");
+//		requestFolder = new File(currentDir + "/sample/request-500-4000/");
+//		requestFolder = new File(currentDir + "/sample/request-500-5000/");
+//		requestFolder = new File(currentDir + "/sample/request-500-6000/");
 		
 		startTime = System.nanoTime(); // start timer
-		evaluateMultipleRequests(simplePDP, requestFolder);
-		while (thrdcount < 800)
+//		evaluateMultipleRequests(simplePDP, requestFolder);
+//		while (thrdcount < 500)
 			Thread.sleep(1000);
 		endTime = System.nanoTime(); // end timer
 		duration = endTime - startTime;
