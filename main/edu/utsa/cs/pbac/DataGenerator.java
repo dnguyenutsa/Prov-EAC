@@ -95,7 +95,7 @@ public class DataGenerator {
 		curObj = model2.createResource(objIdRef.toString());
 		curObj.addProperty(gReview, review1);
 
-		numActions = 6000;
+		numActions = 4000;
 		Random rand = new Random();
 
 		for (int i = 2; i <= numActions; i++){

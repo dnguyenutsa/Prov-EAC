@@ -238,7 +238,7 @@ public class ProvPDP
 		long startTime, endTime, duration;
 		
 		// evaluate single request
-		evaluateOneRequest(simplePDP, requestFile);
+//		evaluateOneRequest(simplePDP, requestFile);
 
 		// evaluate multiple requests with parallelization
 
@@ -290,21 +290,44 @@ public class ProvPDP
 //		System.out.println(duration);
 		
 		// for 500 requests
-		requestFolder = new File(currentDir + "/sample/request-500-1000-width/");
+//		requestFolder = new File(currentDir + "/sample/request-500-1000/");
 //		requestFolder = new File(currentDir + "/sample/request-500-2000/");
 //		requestFolder = new File(currentDir + "/sample/request-500-3000/");
 //		requestFolder = new File(currentDir + "/sample/request-500-4000/");
 //		requestFolder = new File(currentDir + "/sample/request-500-5000/");
 //		requestFolder = new File(currentDir + "/sample/request-500-6000/");
 		
-		startTime = System.nanoTime(); // start timer
+		requestFolder = new File(currentDir + "/sample/request-500-1000-width/");
+		requestFolder = new File(currentDir + "/sample/request-500-2000-width/");
+		requestFolder = new File(currentDir + "/sample/request-500-3000-width/");
+		requestFolder = new File(currentDir + "/sample/request-500-4000-width/");
+//		requestFolder = new File(currentDir + "/sample/request-500-5000-width/");
+//		requestFolder = new File(currentDir + "/sample/request-500-6000-width/");
+
+//		requestFolder = new File(currentDir + "/sample/request-500-1000-depth/");
+//		requestFolder = new File(currentDir + "/sample/request-500-2000-depth/");
+//		requestFolder = new File(currentDir + "/sample/request-500-3000-depth/");
+//		requestFolder = new File(currentDir + "/sample/request-500-4000-depth/");
+//		requestFolder = new File(currentDir + "/sample/request-500-5000-depth/");
+//		requestFolder = new File(currentDir + "/sample/request-500-6000-depth/");
+
+		System.out.println(requestFolder.list().length);
+
+		// Parallel evaluation
+//		startTime = System.nanoTime(); // start timer
 //		evaluateMultipleRequests(simplePDP, requestFolder);
 //		while (thrdcount < 500)
-			Thread.sleep(1000);
+//			Thread.sleep(1000);
+//		endTime = System.nanoTime(); // end timer
+//		duration = endTime - startTime;
+//		System.out.println(duration);
+
+		// Sequential evaluation
+		startTime = System.nanoTime(); // start timer
+		evaluateMultipleRequestsSequentially(simplePDP, requestFolder);
 		endTime = System.nanoTime(); // end timer
 		duration = endTime - startTime;
 		System.out.println(duration);
-
 		
 		// Evaluate requests without parallelization
 		
