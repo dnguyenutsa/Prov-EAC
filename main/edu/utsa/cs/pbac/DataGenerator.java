@@ -1,6 +1,8 @@
 package edu.utsa.cs.pbac;
 
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
@@ -26,6 +28,7 @@ import com.sun.xacml.ctx.ResponseCtx;
 public class DataGenerator {
 	static Model model1, model2;
 	public static String hwgs = "http://peac/hwgs#";
+	public static String osic = "http://peac/osic#";
 
 
 	/*
@@ -124,6 +127,120 @@ public class DataGenerator {
 		String qStr = "PREFIX hw: <http://peac/hwgs#>";
 		qStr += "\n" + 
 				"SELECT ?agent WHERE { hw:o2v0 ^hw:usedInput/hw:wasControlledBy ?agent. }";
+//		System.out.println(qStr);
+
+
+//		for (int i = 0; i < 20; i++){
+//			long startTime = System.nanoTime(); // start timer
+//			Query q = QueryFactory.create(qStr);
+//			QueryExecution qexec= QueryExecutionFactory.create( q, model2 );
+//			ResultSet rs= qexec.execSelect();
+//			long endTime = System.nanoTime(); // end timer
+//
+//			long duration = endTime - startTime;
+//			//			System.out.println("Evaluation Time Run #" + i + ": " + duration);
+//			System.out.println(duration);
+//		}
+		//		while (rs.hasNext()){
+		//			System.out.println(rs.next());
+		//		}
+
+	}
+	
+	private static void generateLargeModelForCloud(int numActions){
+		model2 = ModelFactory.createDefaultModel();
+
+		Resource o1v1 = model2.createResource(osic + "vmi1v0");
+
+		Resource upload1 = model2.createResource(osic + "upload_image1");
+
+		Resource modify1 = model2.createResource(osic + "modify_image1");
+		Resource copyfrom1 = model2.createResource(osic + "copy_from1");
+		Resource getImage1 = model2.createResource(osic + "get_image1");
+		Resource spawn1 = model2.createResource(osic + "spawn1");
+		
+		Resource au1 = model2.createResource(osic + "au1");
+		Resource au2 = model2.createResource(osic + "au2");
+		Resource au3 = model2.createResource(osic + "au3");
+
+		Property gUpload = model2.createProperty(osic, "wasGeneratedByUpload");
+		Property gModify = model2.createProperty(osic, "wasGeneratedByModify");
+		Property controlledBy = model2.createProperty(osic, "wasControlledBy");
+		Property gCopyFrom = model2.createProperty(osic, "wasGeneratedByCopyFrom");
+		Property gGetImage = model2.createProperty(osic, "wasGeneratedByGetImage");
+		Property uInput = model2.createProperty(osic, "usedInput");
+		
+		Property gSpawn = model2.createProperty(osic, "wasGeneratedBySpawn");
+
+		// au1 uploads a homework
+		// note here we can generate multiple instances of au_x to simulate
+		// disjoint graphs/models
+		o1v1.addProperty(gUpload, (upload1));
+		upload1.addProperty(controlledBy, au1);
+
+		// au1 replaced it arbitrary number of times
+		// here we generate large number of replace to simulate depth
+		Resource prevObj = o1v1;
+		Resource curObj = null;
+		for (int i = 1; i <= numActions; i++){
+			StringBuffer objRef = new StringBuffer(osic).append("o1v").append(i);
+			curObj = model2.createResource(objRef.toString());
+			StringBuffer modifyRef = new StringBuffer(osic).append("modify_image").append(i);
+			Resource modify = model2.createResource(modifyRef.toString());
+
+			modify.addProperty(uInput, prevObj).addProperty(controlledBy, au1);
+			curObj.addProperty(gModify, modify);
+			prevObj = curObj;
+		}
+
+		// au1 submitted the latest replaced homework version
+		//		if (curObj == null)
+		//			System.err.println("curObj is null");
+		copyfrom1.addProperty(uInput, prevObj);
+		copyfrom1.addProperty(controlledBy, au1);
+		StringBuffer objRef = new StringBuffer(osic).append("vmi1v").append(numActions+1);
+		curObj = model2.createResource(objRef.toString());
+		curObj.addProperty(gCopyFrom, copyfrom1);
+
+		//		System.out.println("current local: " + curObj.getLocalName());
+		// review process here
+		// note we can generate large number of reviewers to simulate breadth
+		int objId = 2;
+		getImage1.addProperty(uInput, curObj).addProperty(controlledBy, au2);
+		StringBuffer objIdRef = new StringBuffer(osic).append("vmi").append(objId)
+				.append("v0");
+		curObj = model2.createResource(objIdRef.toString());
+		curObj.addProperty(gGetImage, getImage1);
+
+		numActions = 4000;
+		Random rand = new Random();
+
+		for (int i = 2; i <= numActions; i++){
+			StringBuffer getImageRef = new StringBuffer(osic).append("get_image").append(i);
+			Resource getImage = model2.createResource(getImageRef.toString());
+			StringBuffer getImageObjRef = new StringBuffer(osic).append("vmi").append(i).append("v0");
+			Resource resource = model2.createResource(getImageObjRef.toString());
+
+			Resource au = model2.createResource(osic + "au" + rand.nextInt(numActions));
+			//			System.out.println(au.getURI());
+			//			System.out.println(curObj.getURI());
+			getImage.addProperty(uInput, curObj)
+			//			.addProperty(controlledBy, au);
+			.addProperty(controlledBy, au3).addProperty(controlledBy, au2).addProperty(controlledBy, au1);
+			resource.addProperty(gGetImage, getImage);
+			//			System.out.println("resource " + resource.getURI());
+		}
+
+		// grade process here
+		spawn1.addProperty(uInput, curObj).addProperty(controlledBy, au3);
+		objIdRef = new StringBuffer(osic).append("o3v0");
+		curObj = model2.createResource(objIdRef.toString());
+		curObj.addProperty(gSpawn, spawn1);
+
+		// test queries
+//		String qStr = "PREFIX hw: <http://peac/hwgs#>";
+//		qStr += "\n" + 
+//				"SELECT ?agent WHERE { hw:o2v0 ^hw:usedInput/hw:wasControlledBy ?agent. }";
 //		System.out.println(qStr);
 
 
@@ -257,14 +374,26 @@ public class DataGenerator {
 		localDList.put("wasReviewedBy", "wasReviewedOofInverse.wasReviewedOby");
 	}
 
-	public static void main(String args[]){
+	public static void main(String args[]) {
 
 		// generate sample mock data based on grading system scenario
 		// simplified scenario from pbac presentation slides
 		//		manualGeneration();
 
 		// generate sample model to mock large graph
-		generateLargeModel(100000);
+		//generateLargeModel(100000);
+		
+		generateLargeModelForCloud(10000);
+		FileOutputStream fout;
+		try {
+			fout = new FileOutputStream("osis1.rdf");
+			model2.write(fout, "RDF/XML");
+		} catch (FileNotFoundException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+		
 
 		// generate new dependency list and populate with sample data
 		Map<String, String> localDList = DependencyStore.createNewDepList();
